@@ -37,6 +37,11 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
+    @GetMapping("/health")
+    public ResponseEntity<?> health() {
+        return ResponseEntity.ok(Map.of("status", "UP", "service", "alma-backend"));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         String username = body.getOrDefault("username", "").trim();
