@@ -1,0 +1,177 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Alma Visual Identity — Warm Academic Tone (Light-First) */
+    --bg: #FAF8F4;
+    --surface: #FFFFFF;
+    --surface-warm: #F3F1EC;
+
+    --ink: #1B2430;
+    --ink-muted: #6B7280;
+
+    --cobalt: #2450C4;
+    --cobalt-deep: #1B3A94;
+    --gold: #D4A017;
+    --success: #2F9E63;
+    --risk: #D64545;
+    --warning: #E3A008;
+
+    --border-color: rgba(36, 80, 196, 0.12);
+
+    /* Direct Theme Mapping */
+    --ink-color: var(--ink);
+    --surface-color: var(--surface);
+    --border: var(--border-color);
+  }
+
+  html.dark {
+    /* Warm Dark Variant (Not Sci-Fi Black) */
+    --bg: #14181F;
+    --surface: #1C222C;
+    --surface-warm: #252D3A;
+
+    --ink: #F3F4F6;
+    --ink-muted: #9CA3AF;
+
+    --cobalt: #3B82F6;
+    --cobalt-deep: #2563EB;
+    --gold: #F59E0B;
+    --success: #34D399;
+    --risk: #EF4444;
+    --warning: #F59E0B;
+
+    --border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  h1, h2, h3, h4, .font-serif-header {
+    font-family: 'Fraunces', serif;
+  }
+}
+
+/* Alma Card & Panel Styling */
+.command-card, .alma-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px -2px rgba(27, 36, 48, 0.05);
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.command-card:hover, .alma-card:hover {
+  border-color: rgba(36, 80, 196, 0.25);
+  box-shadow: 0 8px 24px -4px rgba(27, 36, 48, 0.09);
+}
+
+/* Alma Rail Sidebar Styling */
+.glass-rail, .alma-rail {
+  background-color: var(--surface);
+  border-right: 1px solid var(--border-color);
+  box-shadow: 2px 0 12px 0 rgba(27, 36, 48, 0.03);
+}
+
+/* Table Styling */
+.command-table-row {
+  transition: background-color 120ms ease, border-left-color 120ms ease;
+  border-left: 3px solid transparent;
+}
+
+.command-table-row:nth-child(even) {
+  background-color: rgba(27, 36, 48, 0.015);
+}
+
+html.dark .command-table-row:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.015);
+}
+
+.command-table-row:hover {
+  background-color: var(--surface-warm);
+  border-left-color: var(--cobalt);
+}
+
+/* Ghost Action Buttons */
+.ghost-action-btn {
+  color: var(--ink-muted);
+  background: transparent;
+  border-radius: 8px;
+  padding: 6px;
+  transition: color 150ms ease, background-color 150ms ease;
+}
+
+.ghost-action-btn:hover {
+  color: var(--cobalt);
+  background-color: rgba(36, 80, 196, 0.08);
+}
+
+.ghost-action-btn.danger:hover {
+  color: var(--risk);
+  background-color: rgba(214, 69, 69, 0.1);
+}
+
+/* Primary Button Styling */
+.btn-cobalt {
+  background-color: var(--cobalt);
+  color: #FFFFFF;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.btn-cobalt:hover {
+  background-color: var(--cobalt-deep);
+  box-shadow: 0 4px 14px 0 rgba(36, 80, 196, 0.25);
+}
+
+.btn-gold {
+  background-color: var(--gold);
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.btn-gold:hover {
+  background-color: #B88A12;
+  box-shadow: 0 4px 14px 0 rgba(212, 160, 23, 0.3);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.25);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-muted);
+}
+
+/* Ticker Animation */
+@keyframes scrollTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-pulse-scroll {
+  display: flex;
+  width: max-content;
+  animation: scrollTicker 32s linear infinite;
+}
+
+.animate-pulse-scroll:hover {
+  animation-play-state: paused;
+}

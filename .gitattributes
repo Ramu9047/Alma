@@ -1,0 +1,29 @@
+# Normalise line endings: store as LF in the repo, checkout as native on each platform
+* text=auto
+
+# Force LF for files that must stay LF regardless of platform
+*.jsx    text eol=lf
+*.js     text eol=lf
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.css    text eol=lf
+*.html   text eol=lf
+*.json   text eol=lf
+*.md     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.properties text eol=lf
+*.java   text eol=lf
+*.xml    text eol=lf
+*.sh     text eol=lf
+
+# Treat these as binary — no line-ending transformation
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.webp   binary
+*.jar    binary
+*.war    binary
+*.zip    binary

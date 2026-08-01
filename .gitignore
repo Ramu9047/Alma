@@ -1,0 +1,92 @@
+# ═══════════════════════════════════════════════════════════════
+# Alma — Academic Command Center  |  .gitignore
+# ═══════════════════════════════════════════════════════════════
+
+# ── Secrets — never commit ────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+backend/.env
+frontend/.env
+frontend/.env.local
+
+# ── Frontend (Node / Vite) ────────────────────────────────────
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+frontend/.vite/
+
+# ── Backend (Maven / Spring Boot) ────────────────────────────
+target/
+backend/target/
+*.jar
+*.war
+*.class
+
+# ── Java / Maven ──────────────────────────────────────────────
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+
+# ── Logs ──────────────────────────────────────────────────────
+logs/
+*.log
+backend/logs/
+frontend/logs/
+
+# ── Python (if any tooling) ───────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.eggs/
+build/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg
+.venv
+venv/
+env/
+ENV/
+
+# ── IDEs & editors ────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docobj
+.vs/
+
+# ── OS ────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ── Test artifacts ────────────────────────────────────────────
+frontend/verify_*.mjs
+frontend/rbac_proof*.mjs
+frontend/playwright-report/
+playwright/.cache/
+
+# ── Misc ──────────────────────────────────────────────────────
+*.tmp
+*.swp
+*.bak
+.cache/
