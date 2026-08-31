@@ -1,7 +1,12 @@
 package com.college.erp.controller;
 
+import com.college.erp.model.AuditLog;
+import com.college.erp.model.CopilotLog;
+import com.college.erp.repository.CopilotLogRepository;
+import com.college.erp.service.AuditService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -39,17 +44,23 @@ public class CopilotController {
     @Value("${groq.api-key}")
     private String groqApiKey;
 
+    private final CopilotLogRepository copilotLogRepo;
+    private final AuditService auditService;
     private final RestTemplate restTemplate = new RestTemplate();
 
+    public CopilotController(CopilotLogRepository copilotLogRepo, AuditService auditService) {
+        this.copilotLogRepo = copilotLogRepo;
+        this.auditService = auditService;
+    }
+
     @PostMapping("/chat")
-    public ResponseEntity<Map<String, Object>> chat(@RequestBody Map<String, String> body) {
+    public ResponseEntity<Map<String, Object>> chat(@RequestBody Map<String, String> body, Authentication auth) {
         String prompt = body.getOrDefault("prompt", "").trim();
         if (prompt.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("error", "prompt is required"));
         }
 
         try {
-            // ── Build Groq request (OpenAI-compatible format) ──────────────
             Map<String, Object> requestBody = Map.of(
                 "model", MODEL,
                 "messages", List.of(
@@ -68,7 +79,6 @@ public class CopilotController {
 
             ResponseEntity<Map> groqResponse = restTemplate.postForEntity(GROQ_URL, request, Map.class);
 
-            // ── Parse Groq response ────────────────────────────────────────
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> choices =
                 (List<Map<String, Object>>) groqResponse.getBody().get("choices");
@@ -92,10 +102,22 @@ public class CopilotController {
                 LocalDateTime.now()
             );
 
+            // Persist CopilotLog to Mongo
+            CopilotLog logEntry = new CopilotLog();
+            logEntry.setActorId(auth != null ? auth.getName() : "anonymous");
+            logEntry.setActorName(auth != null ? auth.getName() : "Anonymous User");
+            logEntry.setActorType("copilot");
+            logEntry.setPrompt(prompt);
+            logEntry.setResolvedAction(answer);
+            logEntry.setConfirmed(true);
+            logEntry.setTimestamp(LocalDateTime.now());
+            copilotLogRepo.save(logEntry);
+
             return ResponseEntity.ok(Map.of(
                 "answer", answer,
                 "trace",  trace,
-                "model",  MODEL
+                "model",  MODEL,
+                "logId",  logEntry.getId() != null ? logEntry.getId() : ""
             ));
 
         } catch (Exception e) {
@@ -106,15 +128,31 @@ public class CopilotController {
         }
     }
 
-    // ── Action execution endpoint (unchanged — audit-logged, JWT-gated) ──
     @PostMapping("/execute-action")
-    public ResponseEntity<Map<String, Object>> executeAction(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Map<String, Object>> executeAction(@RequestBody Map<String, Object> payload, Authentication auth) {
+        String actionType = payload.getOrDefault("actionType", "unknown").toString();
+        AuditLog audit = auditService.log(
+            auth != null ? auth.getName() : "copilot",
+            extractRole(auth),
+            "COPILOT_ACTION_EXECUTED_" + actionType.toUpperCase(),
+            "copilot_actions",
+            "cop_" + System.currentTimeMillis(),
+            null,
+            payload
+        );
+
         return ResponseEntity.ok(Map.of(
             "status",     "SUCCESS",
-            "action",     payload.getOrDefault("actionType", "unknown"),
+            "action",     actionType,
             "actorType",  "copilot",
-            "auditLogId", "log_cop_" + System.currentTimeMillis(),
+            "auditLogId", audit.getId(),
             "executedAt", LocalDateTime.now().toString()
         ));
+    }
+
+    private String extractRole(Authentication auth) {
+        if (auth == null) return "UNKNOWN";
+        return auth.getAuthorities().stream().findFirst()
+            .map(a -> a.getAuthority().replace("ROLE_", "")).orElse("UNKNOWN");
     }
 }

@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 const PulseContext = createContext();
 
@@ -13,29 +15,56 @@ const INITIAL_PULSE_METRICS = [
 
 export function PulseProvider({ children }) {
   const [metrics, setMetrics] = useState(INITIAL_PULSE_METRICS);
+  const [isConnected, setIsConnected] = useState(false);
 
-  // Dynamic simulation of incoming real-time operational updates
   useEffect(() => {
-    const interval = setInterval(() => {
-      const randomAttendance = 140 + Math.floor(Math.random() * 15);
-      const randomFeePct = 78 + Math.floor(Math.random() * 3);
-      setMetrics(prev => [
-        { id: '1', type: 'attendance', text: `${randomAttendance} students present today (${Math.round((randomAttendance/155)*100)}% turnout)` },
-        { id: '2', type: 'leaves', text: `${Math.floor(Math.random() * 4) + 1} leave approvals pending HoD review` },
-        { id: '3', type: 'fees', text: `Fee collection ${randomFeePct}% for Spring 2026 term` },
-        ...prev.slice(3)
-      ]);
-    }, 15000);
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    const client = new Client({
+      webSocketFactory: () => new SockJS(`${apiBase}/ws-pulse`),
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+      onConnect: () => {
+        setIsConnected(true);
+        client.subscribe('/topic/pulse', (message) => {
+          try {
+            const body = JSON.parse(message.body);
+            if (body?.message) {
+              setMetrics(prev => [
+                { id: body.id || `ws_${Date.now()}`, type: 'system', text: `[STOMP] ${body.message}` },
+                ...prev
+              ].slice(0, 8)); // Capped at max 8 items
+            }
+          } catch (e) {
+            console.error('Failed to parse STOMP pulse message', e);
+          }
+        });
+      },
+      onDisconnect: () => {
+        setIsConnected(false);
+      },
+      onStompError: (frame) => {
+        console.warn('STOMP Error:', frame);
+        setIsConnected(false);
+      }
+    });
 
-    return () => clearInterval(interval);
+    client.activate();
+
+    return () => {
+      client.deactivate();
+    };
   }, []);
 
   const pushPulseAlert = (newAlert) => {
-    setMetrics(prev => [{ id: `alert_${Date.now()}`, type: 'alert', text: newAlert }, ...prev]);
+    setMetrics(prev => [
+      { id: `alert_${Date.now()}`, type: 'alert', text: newAlert },
+      ...prev
+    ].slice(0, 8)); // Capped at max 8 items per Item 12 requirement
   };
 
   return (
-    <PulseContext.Provider value={{ metrics, pushPulseAlert }}>
+    <PulseContext.Provider value={{ metrics, pushPulseAlert, isConnected }}>
       {children}
     </PulseContext.Provider>
   );

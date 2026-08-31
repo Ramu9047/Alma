@@ -1,16 +1,28 @@
-import React, { useState } from 'react';
-import { mockTimetable } from '../services/api';
-import { CheckCircle2, ShieldAlert, Radio } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { apiService, mockTimetable } from '../services/api';
+import { CheckCircle2, ShieldAlert, Radio, WifiOff } from 'lucide-react';
 import GrowthArc from '../components/common/GrowthArc';
 
 export default function TimetableGenerator() {
   const [timetable, setTimetable] = useState(mockTimetable);
+  const [isOffline, setIsOffline] = useState(false);
   const [conflictAlert, setConflictAlert] = useState(null);
 
-  // Live Collaboration Presence State
   const [activeCollaborators] = useState([
     { id: 'usr_stf1', name: 'Prof. Marcus Vance', slot: 'Monday-period2', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80' },
   ]);
+
+  const loadTimetable = async () => {
+    const res = await apiService.getTimetable();
+    if (res.data && res.data.length > 0) {
+      setTimetable(res.data);
+    }
+    setIsOffline(res.offline);
+  };
+
+  useEffect(() => {
+    loadTimetable();
+  }, []);
 
   const checkConflict = (day, periodKey, newValue) => {
     const matches = timetable.filter(row => row[periodKey] === newValue && row.day !== day);
@@ -21,15 +33,28 @@ export default function TimetableGenerator() {
     }
   };
 
-  const handleCellEdit = (day, periodKey, newValue) => {
+  const handleCellEdit = async (day, periodKey, newValue, rowId) => {
     checkConflict(day, periodKey, newValue);
     setTimetable(prev =>
       prev.map(row => (row.day === day ? { ...row, [periodKey]: newValue } : row))
     );
+    if (rowId) {
+      await apiService.updateTimetable(rowId, { department: 'CSE', day, timeSlot: periodKey, subjectCode: newValue, room: 'LH-101' });
+    }
   };
 
   return (
     <div className="space-y-6">
+      {isOffline && (
+        <div className="p-3 bg-warning/10 border border-warning/30 text-warning text-xs font-mono rounded-xl flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <WifiOff className="w-4 h-4" />
+            <span>Backend offline — displaying cached demo timetable matrix</span>
+          </div>
+          <span className="px-2 py-0.5 bg-warning/20 rounded text-[10px] font-bold">DEMO MODE</span>
+        </div>
+      )}
+
       <div className="command-card p-6 space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-4">
           <div>
@@ -38,7 +63,6 @@ export default function TimetableGenerator() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Live Presence Avatars */}
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-warm border border-border text-xs font-mono">
               <Radio className="w-3.5 h-3.5 text-cobalt animate-pulse" />
               <span className="text-ink-muted text-[10px] uppercase font-semibold">ACTIVE COLLABORATORS:</span>
@@ -90,6 +114,7 @@ export default function TimetableGenerator() {
                   <td className="p-3.5 font-semibold text-cobalt">{row.day}</td>
                   {['period1', 'period2', 'period3', 'period4'].map(periodKey => {
                     const activeEditor = activeCollaborators.find(c => c.slot === `${row.day}-${periodKey}`);
+                    const cellVal = row[periodKey] || row.subjectCode || '';
                     return (
                       <td key={periodKey} className="p-3.5 relative">
                         {activeEditor && (
@@ -99,8 +124,8 @@ export default function TimetableGenerator() {
                         )}
                         <input
                           type="text"
-                          value={row[periodKey]}
-                          onChange={e => handleCellEdit(row.day, periodKey, e.target.value)}
+                          value={cellVal}
+                          onChange={e => handleCellEdit(row.day, periodKey, e.target.value, row.id)}
                           className={`w-full px-2.5 py-1.5 bg-surface-warm border rounded-xl text-ink text-xs focus:border-cobalt focus:outline-none ${
                             activeEditor ? 'border-cobalt ring-1 ring-cobalt' : 'border-border'
                           }`}

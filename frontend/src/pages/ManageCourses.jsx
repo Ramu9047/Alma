@@ -2,16 +2,20 @@ import React, { useState, useEffect } from 'react';
 import DataTable from '../components/common/DataTable';
 import GrowthArc from '../components/common/GrowthArc';
 import { apiService, mockCourses } from '../services/api';
-import { Plus, BookOpen, Layers, CheckCircle } from 'lucide-react';
+import { Plus, BookOpen, Layers, CheckCircle, WifiOff } from 'lucide-react';
 
 export default function ManageCourses() {
   const [courses, setCourses] = useState(mockCourses);
+  const [isOffline, setIsOffline] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
   const [formData, setFormData] = useState({ code: '', name: '', department: 'CSE', durationYears: 4, status: 'Active' });
 
   useEffect(() => {
-    apiService.getCourses().then(data => setCourses(data));
+    apiService.getCourses().then(res => {
+      if (res.data && res.data.length > 0) setCourses(res.data);
+      setIsOffline(res.offline);
+    });
   }, []);
 
   const handleOpenAdd = () => {
@@ -22,18 +26,24 @@ export default function ManageCourses() {
 
   const handleOpenEdit = (course) => {
     setEditingCourse(course);
-    setFormData({ ...course });
+    setFormData({
+      code: course.courseCode || course.code || '',
+      name: course.name || '',
+      department: course.department || 'CSE',
+      durationYears: course.duration || course.durationYears || 4,
+      status: 'Active'
+    });
     setIsModalOpen(true);
   };
 
   const handleDelete = (course) => {
-    setCourses(prev => prev.filter(c => c.id !== course.id));
+    setCourses(prev => prev.filter(c => (c.id || c.courseCode) !== (course.id || course.courseCode)));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (editingCourse) {
-      setCourses(prev => prev.map(c => (c.id === editingCourse.id ? { ...c, ...formData } : c)));
+      setCourses(prev => prev.map(c => ((c.id || c.courseCode) === (editingCourse.id || editingCourse.courseCode) ? { ...c, ...formData } : c)));
     } else {
       const newCrs = { ...formData, id: `crs_${Date.now()}` };
       setCourses(prev => [...prev, newCrs]);
@@ -43,14 +53,10 @@ export default function ManageCourses() {
 
   const columns = [
     {
-      header: '#',
-      render: (row) => <span className="text-ink-muted font-mono">#{row.id.replace('crs_', '')}</span>
-    },
-    {
       header: 'Course Code',
       render: (row) => (
         <span className="font-mono font-semibold text-cobalt bg-cobalt/10 px-2 py-0.5 rounded-md border border-cobalt/20">
-          {row.code}
+          {row.courseCode || row.code}
         </span>
       )
     },
@@ -65,14 +71,14 @@ export default function ManageCourses() {
     },
     {
       header: 'Duration',
-      render: (row) => <span className="font-mono text-ink">{row.durationYears} Years</span>
+      render: (row) => <span className="font-mono text-ink">{row.duration || row.durationYears || 4} Years</span>
     },
     {
       header: 'Status',
       render: (row) => (
         <span className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-success/10 text-success border border-success/30 font-semibold">
           <CheckCircle className="w-3 h-3" />
-          {row.status}
+          {row.status || 'Active'}
         </span>
       )
     }
@@ -80,6 +86,16 @@ export default function ManageCourses() {
 
   return (
     <div className="space-y-6">
+      {isOffline && (
+        <div className="p-3 bg-warning/10 border border-warning/30 text-warning text-xs font-mono rounded-xl flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <WifiOff className="w-4 h-4" />
+            <span>Backend offline — displaying cached demo course catalog</span>
+          </div>
+          <span className="px-2 py-0.5 bg-warning/20 rounded text-[10px] font-bold">DEMO MODE</span>
+        </div>
+      )}
+
       {/* Top Banner Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="command-card p-5 flex items-center justify-between">
