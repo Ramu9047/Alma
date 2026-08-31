@@ -141,73 +141,66 @@ export default function NexusOrbCopilot() {
     setQuery('');
     setIsThinking(true);
 
-    setTimeout(() => {
-      const response = processNaturalLanguage(userText);
-      setIsThinking(false);
-      if (response?.pendingAction) {
-        setPendingAction(response.pendingAction);
-      }
-      if (response?.message) {
-        setMessages(prev => [...prev, {
-          id: `cop_${Date.now()}`,
-          sender: 'copilot',
-          ...response.message,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }]);
-      }
-    }, 1200);
-  };
-
-  const processNaturalLanguage = (text) => {
-    const lower = text.toLowerCase();
-
-    // ── Attendance query ──────────────────────────────────────────────
-    if (lower.includes('attendance') || lower.includes('below 75') || lower.includes('low attendance')) {
-      setHasRiskAlert(true);
-      return {
-        message: buildResponse(
-          `2 students in CSE/ECE currently have attendance below 75%:\n\n- **Ananya Patel** (ECE-BS) — 74% attendance\n- **Vikram Singh** (MECH-BS) — 62% attendance *(High Dropout Risk: 78/100)*\n\nVikram is at critical threshold. Consider triggering an HoD alert.`,
-          `Query: getStudentsBelowAttendance(course="CSE/ECE", threshold=75)\nReturned: 2 records\nModel: llama-3.3-70b-versatile (Groq)\nLatency: ~1.1s`
-        )
-      };
+    // ── Detect leave-approval intent client-side so we can surface the
+    //    confirmation card while still getting a real LLM response ────────
+    const lower = userText.toLowerCase();
+    const isLeaveIntent = lower.includes('approve') && lower.includes('leave');
+    if (isLeaveIntent) {
+      setPendingAction({
+        type: 'APPROVE_LEAVE',
+        target: 'Prof. Marcus Vance',
+        details: 'Medical Leave (2026-07-25 to 2026-07-27)',
+        endpoint: '/api/leaves/lev_01/decision',
+        payload: { decision: 'APPROVED' }
+      });
     }
 
-    // ── Leave approval action ─────────────────────────────────────────
-    if (lower.includes('approve') && lower.includes('leave')) {
-      return {
-        pendingAction: {
-          type: 'APPROVE_LEAVE',
-          target: 'Prof. Marcus Vance',
-          details: 'Medical Leave (2026-07-25 to 2026-07-27)',
-          endpoint: '/api/leaves/lev_01/decision',
-          payload: { decision: 'APPROVED' }
+    try {
+      const token = localStorage.getItem('campus_auth_token');
+      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+
+      const res = await fetch(`${apiBase}/api/copilot/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
-        message: buildResponse(
-          `I found a pending leave request for **Prof. Marcus Vance** — Medical Leave, 25–27 July 2026.\n\nThis action requires your explicit confirmation before writing. Review the details below before proceeding.`,
-          `Action: APPROVE_LEAVE\nTarget: lev_01\nEndpoint: PUT /api/leaves/lev_01/decision\nRole required: ADMIN_HOD or SUPER_ADMIN`
-        )
-      };
-    }
+        body: JSON.stringify({ prompt: userText })
+      });
 
-    // ── Fee / overdue query ───────────────────────────────────────────
-    if (lower.includes('fee') || lower.includes('overdue') || lower.includes('unpaid')) {
-      setHasRiskAlert(true);
-      return {
-        message: buildResponse(
-          `1 student has a critically overdue fee account:\n\n- **Vikram Singh** (MECH-BS) — ₹68,000 outstanding, overdue by **36 days** *(Fee Default Risk: 85/100)*\n\nA fee notice dispatch is recommended.`,
-          `Query: getOverdueFeeStudents(overdueThresholdDays=30)\nReturned: 1 critical record\nModel: llama-3.3-70b-versatile (Groq)\nLatency: ~0.9s`
-        )
-      };
-    }
+      const data = await res.json();
 
-    // ── Default ───────────────────────────────────────────────────────
-    return {
-      message: buildResponse(
-        `All active campus operations are within normal parameters. You can ask me to:\n\n- **Show low attendance students**\n- **Check overdue fee accounts**\n- **Approve a pending leave request**`,
-        `Query: defaultFallback("${text}")\nNo structured tool call matched. Fell back to parameter summary.`
-      )
-    };
+      if (!res.ok) {
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+
+      // Flag risk alerts based on LLM answer content
+      const answerLower = (data.answer || '').toLowerCase();
+      if (answerLower.includes('risk') || answerLower.includes('overdue') || answerLower.includes('below')) {
+        setHasRiskAlert(true);
+      }
+
+      setMessages(prev => [...prev, {
+        id: `cop_${Date.now()}`,
+        sender: 'copilot',
+        text: data.answer,
+        trace: data.trace || null,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }]);
+
+    } catch (err) {
+      setMessages(prev => [...prev, {
+        id: `cop_err_${Date.now()}`,
+        sender: 'copilot',
+        text: `⚠️ Copilot is temporarily unavailable. Error: ${err.message}`,
+        trace: null,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }]);
+    } finally {
+      setIsThinking(false);
+    }
   };
+
 
   const handleConfirmAction = () => {
     if (!pendingAction) return;
@@ -268,7 +261,7 @@ export default function NexusOrbCopilot() {
                   <h3 className="font-serif font-bold text-ink text-base flex items-center gap-2">
                     Alma AI Copilot
                     <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-cobalt/10 text-cobalt border border-cobalt/20 font-semibold">
-                      Groq llama-3.3-70b
+                      GPT OSS 120B via Groq
                     </span>
                   </h3>
                   <p className="text-[10px] font-mono text-ink-muted">Constrained Tool-Call Query & Action Engine</p>
