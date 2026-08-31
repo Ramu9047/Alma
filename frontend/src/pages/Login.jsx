@@ -8,7 +8,7 @@ export default function Login() {
   const navigate = useNavigate();
   const { login, isRateLimited, completeFirstLoginPasswordChange } = useAuth();
   const [username, setUsername] = useState('admin_hod');
-  const [password, setPassword] = useState('admin123');
+  const [password, setPassword] = useState('hod123');
   const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState('');
   const [isFirstLoginStep, setIsFirstLoginStep] = useState(false);
