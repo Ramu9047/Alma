@@ -101,14 +101,13 @@ public class AttendanceController {
     }
 
     @GetMapping("/me/summary")
-    public ResponseEntity<Map<String, Object>> getMySummary(Authentication auth) {
-        if (auth == null) return ResponseEntity.status(401).build();
+    public ResponseEntity<?> getMySummary(Authentication auth) {
+        if (auth == null) return ResponseEntity.status(401).body(Map.of("error", "Unauthenticated"));
         String username = auth.getName();
         Optional<Student> studentOpt = studentRepo.findByStudentId(username)
-            .or(() -> studentRepo.findByEmail(username))
-            .or(() -> studentRepo.findByStudentId("CS2024-042"));
+            .or(() -> studentRepo.findByEmail(username));
         if (studentOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body(Map.of("error", "No student record linked to this account"));
         }
         String studentId = studentOpt.get().getStudentId();
         return ResponseEntity.ok(computeSummaryForStudent(studentId));

@@ -15,10 +15,10 @@ export default function LiveOccupancy() {
       <div className="command-card p-6 bg-gradient-to-r from-surface via-surface-warm to-surface border border-border space-y-2">
         <div className="flex items-center gap-2 text-cobalt">
           <Building2 className="w-5 h-5" />
-          <span className="font-mono text-xs uppercase tracking-wider font-semibold">LIVE CAMPUS OCCUPANCY MONITOR</span>
+          <span className="font-mono text-xs uppercase tracking-wider font-semibold">CAMPUS ROOM CAPACITY DIRECTORY</span>
         </div>
-        <h2 className="font-serif text-2xl font-bold text-ink">Real-Time Hall & Laboratory Check-In Tracker</h2>
-        <p className="text-xs text-ink-muted font-mono">Live WebSocket check-in feeds per building block</p>
+        <h2 className="font-serif text-2xl font-bold text-ink">Campus Hall & Laboratory Directory</h2>
+        <p className="text-xs text-ink-muted font-mono">Static room capacity schedule & catalog · Live sensor check-in coming soon</p>
       </div>
 
       <GrowthArc mode="divider" variant="cobalt" />
@@ -42,7 +42,7 @@ export default function LiveOccupancy() {
 
             <div className="space-y-1">
               <div className="flex justify-between text-xs font-mono">
-                <span className="text-ink-muted">OCCUPANCY:</span>
+                <span className="text-ink-muted">CAPACITY REFERENCE:</span>
                 <span className="text-ink font-bold">{room.occupied} / {room.capacity}</span>
               </div>
               <div className="w-full bg-surface-warm h-2 rounded-full overflow-hidden border border-border">
@@ -55,8 +55,8 @@ export default function LiveOccupancy() {
 
             <div className="text-[11px] font-mono text-ink-muted flex items-center justify-between pt-1">
               <span>INSTRUCTOR: {room.instructor}</span>
-              <span className="text-cobalt font-semibold flex items-center gap-1">
-                <Clock className="w-3 h-3" /> Live Check-In
+              <span className="text-ink-muted font-semibold flex items-center gap-1 text-[10px]">
+                <Clock className="w-3 h-3 text-cobalt" /> Scheduled Directory
               </span>
             </div>
           </div>

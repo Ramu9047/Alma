@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -21,12 +22,13 @@ public class ParentController {
     }
 
     @GetMapping("/me/child")
-    public ResponseEntity<Student> getMyChild(Authentication auth) {
-        if (auth == null) return ResponseEntity.status(401).build();
+    public ResponseEntity<?> getMyChild(Authentication auth) {
+        if (auth == null) return ResponseEntity.status(401).body(Map.of("error", "Unauthenticated"));
         String username = auth.getName();
         Optional<Student> childOpt = studentRepo.findByParentUsername(username);
-        return childOpt.map(ResponseEntity::ok)
-            .orElseGet(() -> studentRepo.findByStudentId("CS2024-042").map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build()));
+        if (childOpt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("error", "No student record linked to this account"));
+        }
+        return ResponseEntity.ok(childOpt.get());
     }
 }

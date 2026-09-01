@@ -47,11 +47,18 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedStudents() {
-        if (studentRepo.count() > 0) { log.info("Students already seeded — skipping"); return; }
+        if (studentRepo.count() > 0) {
+            studentRepo.findByStudentId("CS2024-042").ifPresent(s -> {
+                s.setParentUsername("parent_001");
+                studentRepo.save(s);
+            });
+            log.info("Students already seeded — updated parent_001 link");
+            return;
+        }
         Student s1 = student("CS2024-042", "Alex Rivera",      "alex@alma.edu",    "CSE", "B.Tech CSE",          "2024", 88.0, 3.6, "Paid",    0, "9900001111", "parent1@alma.edu", "parent_001");
         studentRepo.saveAll(List.of(
             s1,
-            student("EC2023-017", "Ananya Patel",     "ananya@alma.edu",  "ECE", "B.Tech ECE",          "2023", 74.0, 2.9, "Partial", 1, "9900002222", "parent2@alma.edu", "parent_002"),
+            student("EC2023-017", "Ananya Patel",     "ananya@alma.edu",  "ECE", "B.Tech ECE",          "2023", 74.0, 2.9, "Partial", 1, "9900002222", "parent2@alma.edu", null),
             student("ME2023-031", "Vikram Singh",     "vikram@alma.edu",  "ME",  "B.Tech Mech",         "2023", 62.0, 2.4, "Overdue", 2, "9900003333", "parent3@alma.edu", "parent_003"),
             student("CS2024-055", "Priya Sharma",     "priya@alma.edu",   "CSE", "B.Tech CSE",          "2024", 91.0, 3.8, "Paid",    0, "9900004444", "parent4@alma.edu", "parent_004"),
             student("EC2024-008", "Rahul Nair",       "rahul@alma.edu",   "ECE", "B.Tech ECE",          "2024", 95.0, 3.9, "Paid",    0, "9900005555", "parent5@alma.edu", "parent_005"),

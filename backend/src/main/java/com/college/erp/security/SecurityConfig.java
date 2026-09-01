@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpMethod;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -82,7 +84,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/attendance/me/summary", "/api/attendance/student/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF", "STUDENT")
                 .requestMatchers("/api/attendance/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF")
 
-                // Feedback endpoints — any authenticated user can read/create; replies checked in controller
+                // Feedback endpoints — replies restricted to Staff/Admin/HoD; read/create open to authenticated users
+                .requestMatchers(HttpMethod.POST, "/api/feedback/*/reply").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF")
                 .requestMatchers("/api/feedback/**").authenticated()
 
                 // Copilot action execution — admin only

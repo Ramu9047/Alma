@@ -26,11 +26,13 @@ public class AuthController {
 
     // Demo user store: username → { password, springRole, displayName }
     private static final Map<String, String[]> DEMO_USERS = Map.of(
-        "admin_hod",    new String[]{"hod123",     "ROLE_ADMIN_HOD",   "Dr. Sarah Jenkins"},
-        "super_admin",  new String[]{"super123",   "ROLE_SUPER_ADMIN", "System Administrator"},
-        "staff_001",    new String[]{"staff123",   "ROLE_STAFF",       "Prof. Marcus Vance"},
-        "student_001",  new String[]{"student123", "ROLE_STUDENT",     "Alex Rivera (CS2024-042)"},
-        "parent_001",   new String[]{"parent123",  "ROLE_PARENT",      "Elena Rivera (Parent of Alex)"}
+        "admin_hod",       new String[]{"hod123",     "ROLE_ADMIN_HOD",   "Dr. Sarah Jenkins"},
+        "super_admin",     new String[]{"super123",   "ROLE_SUPER_ADMIN", "System Administrator"},
+        "staff_001",       new String[]{"staff123",   "ROLE_STAFF",       "Prof. Marcus Vance"},
+        "student_001",     new String[]{"student123", "ROLE_STUDENT",     "Alex Rivera (CS2024-042)"},
+        "student_999",     new String[]{"student123", "ROLE_STUDENT",     "Unlinked Student"},
+        "parent_001",      new String[]{"parent123",  "ROLE_PARENT",      "Elena Rivera (Parent of Alex)"},
+        "parent_002",      new String[]{"parent123",  "ROLE_PARENT",      "Sophia Patel (Unlinked Parent)"}
     );
 
     public AuthController(JwtService jwtService) {
