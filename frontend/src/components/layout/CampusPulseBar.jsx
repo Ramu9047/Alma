@@ -6,25 +6,31 @@ export default function CampusPulseBar() {
   const { metrics } = usePulse();
   const containerRef = useRef(null);
   const trackRef = useRef(null);
-  const [repeatCount, setRepeatCount] = useState(2);
+  const [repeatCount, setRepeatCount] = useState(4);
 
   useEffect(() => {
-    if (!containerRef.current || !trackRef.current || metrics.length === 0) return;
+    const measureWidths = () => {
+      if (!containerRef.current || !trackRef.current || metrics.length === 0) return;
 
-    const containerWidth = containerRef.current.offsetWidth;
-    const itemElements = trackRef.current.children;
-    if (itemElements.length === 0) return;
+      const containerWidth = containerRef.current.offsetWidth;
+      const itemElements = trackRef.current.children;
+      if (itemElements.length === 0) return;
 
-    let singleSetWidth = 0;
-    const singleSetCount = Math.min(metrics.length, itemElements.length);
-    for (let i = 0; i < singleSetCount; i++) {
-      singleSetWidth += itemElements[i].offsetWidth + 24; // gap-6 = 24px
-    }
+      let singleSetWidth = 0;
+      const singleSetCount = Math.min(metrics.length, itemElements.length);
+      for (let i = 0; i < singleSetCount; i++) {
+        singleSetWidth += itemElements[i].offsetWidth + 24; // gap-6 = 24px
+      }
 
-    if (singleSetWidth > 0 && containerWidth > 0) {
-      const neededForOverflow = Math.max(1, Math.ceil(containerWidth / singleSetWidth));
-      setRepeatCount(neededForOverflow * 2);
-    }
+      if (singleSetWidth > 0 && containerWidth > 0) {
+        const neededForOverflow = Math.max(1, Math.ceil(containerWidth / singleSetWidth));
+        setRepeatCount(neededForOverflow * 2);
+      }
+    };
+
+    measureWidths();
+    window.addEventListener('resize', measureWidths);
+    return () => window.removeEventListener('resize', measureWidths);
   }, [metrics]);
 
   const displayMetrics = Array.from({ length: repeatCount }).flatMap(() => metrics);

@@ -113,8 +113,8 @@ cp .env.example .env
 # Build
 mvn clean package -DskipTests
 
-# Run (Windows PowerShell example)
-$env:ALMA_JWT_SECRET="AlmaCampusCommandCenter2025SecretKeyForHMACSHA256MustBe32Bytes!"; java -jar target/erp-backend-2.0.0-SNAPSHOT.jar
+# Run (Windows PowerShell example — set your own 32+ byte secret)
+$env:ALMA_JWT_SECRET="<your-32+-byte-secret-key>"; java -jar target/erp-backend-2.0.0-SNAPSHOT.jar
 ```
 
 Backend starts on **http://localhost:8080**

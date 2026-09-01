@@ -21,10 +21,10 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: alma_backend
-    restart: unless-stopped
+    env_file:
+      - .env
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/alma_db
-      - ALMA_JWT_SECRET=AlmaCampusCommandCenter2025SecretKeyForHMACSHA256MustBe32Bytes!
       - ALMA_JWT_EXPIRATION_MS=86400000
     ports:
       - "8080:8080"
