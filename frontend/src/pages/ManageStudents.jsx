@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '../components/common/DataTable';
+import StatusPill from '../components/common/StatusPill';
 import { apiService } from '../services/api';
 import { UserPlus, WifiOff, X } from 'lucide-react';
 
@@ -103,15 +104,7 @@ export default function ManageStudents() {
     },
     {
       header: 'Fee Status',
-      render: (row) => (
-        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold border ${
-          row.feeStatus === 'Paid' ? 'bg-success/10 text-success border-success/30' :
-          row.feeStatus === 'Pending' || row.feeStatus === 'Partial' ? 'bg-warning/10 text-warning border-warning/30' :
-          'bg-risk/10 text-risk border-risk/30'
-        }`}>
-          {row.feeStatus}
-        </span>
-      )
+      render: (row) => <StatusPill category="fee" status={row.feeStatus || 'Paid'} />
     }
   ];
 

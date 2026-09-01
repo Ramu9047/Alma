@@ -35,16 +35,17 @@ export default function ParentPortal() {
       )}
 
       {/* Banner */}
-      <div className="command-card p-6 bg-gradient-to-r from-surface via-surface-warm to-surface border border-border space-y-2">
-        <div className="flex items-center gap-2 text-cobalt">
-          <Shield className="w-5 h-5" />
-          <span className="font-mono text-xs uppercase tracking-wider font-semibold">ALMA PARENT PORTAL (READ-ONLY LINKED VIEW)</span>
+      <div className="command-card p-6 bg-gradient-to-r from-surface via-surface-warm to-surface border border-border space-y-4">
+        <div>
+          <div className="flex items-center gap-2 text-cobalt">
+            <Shield className="w-5 h-5" />
+            <span className="font-mono text-xs uppercase tracking-wider font-semibold">ALMA PARENT PORTAL (READ-ONLY LINKED VIEW)</span>
+          </div>
+          <h2 className="font-serif text-2xl font-bold text-ink mt-1">Linked Student: {student.name}</h2>
+          <p className="text-xs text-ink-muted font-mono mt-0.5">Roll No: {student.rollNumber || student.studentId} | Course: {student.course} | Term: Spring 2026</p>
         </div>
-        <h2 className="font-serif text-2xl font-bold text-ink">Linked Student: {student.name}</h2>
-        <p className="text-xs text-ink-muted font-mono">Roll No: {student.rollNumber || student.studentId} | Course: {student.course} | Term: Spring 2026</p>
+        <GrowthArc mode="divider" variant="gold" />
       </div>
-
-      <GrowthArc mode="divider" variant="gold" />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="command-card p-5 space-y-1">

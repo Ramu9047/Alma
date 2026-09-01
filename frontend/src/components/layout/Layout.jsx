@@ -43,16 +43,16 @@ export default function Layout() {
             <div className="flex items-center gap-4">
               <ThemeToggle />
 
-              {/* Demo View Role Switcher Dropdown (Explicitly labeled as Demo View Preview) */}
+              {/* Demo View Role Switcher Dropdown (Visually demoted secondary control with DEMO tag) */}
               <div className="relative">
                 <button
                   onClick={() => setRoleMenuOpen(!roleMenuOpen)}
                   title="Preview UI perspective (REST API actions remain strictly gated by your authenticated JWT session)"
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-warm border border-border hover:border-cobalt/40 text-xs font-mono text-ink transition-all"
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-surface-warm/60 border border-dashed border-border hover:border-cobalt/40 text-xs font-mono text-ink-muted opacity-80 hover:opacity-100 transition-all"
                 >
-                  <UserCheck className="w-3.5 h-3.5 text-cobalt" />
-                  <span className="text-[10px] text-ink-muted uppercase font-semibold">PREVIEW VIEW:</span>
-                  <span className="font-semibold text-cobalt">{user?.role}</span>
+                  <span className="px-1.5 py-0.5 rounded bg-cobalt/10 text-cobalt font-mono text-[9px] font-bold tracking-widest border border-cobalt/20">DEMO VIEW</span>
+                  <span className="text-[10px] uppercase font-semibold text-ink-muted hidden md:inline">PREVIEW:</span>
+                  <span className="font-semibold text-cobalt text-[11px]">{user?.role}</span>
                   <ChevronDown className="w-3 h-3 text-ink-muted" />
                 </button>
 

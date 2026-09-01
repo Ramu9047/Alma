@@ -6,6 +6,7 @@ import { DollarSign, CreditCard, Download, ShieldCheck, AlertTriangle, Lock, Wif
 import { usePulse } from '../context/PulseContext';
 import { useAuth, ROLES } from '../context/AuthContext';
 import GrowthArc from '../components/common/GrowthArc';
+import StatusPill from '../components/common/StatusPill';
 
 export default function FeeManagement() {
   const { pushPulseAlert } = usePulse();
@@ -80,18 +81,7 @@ export default function FeeManagement() {
     { header: 'Paid Fee', render: (r) => <span className="font-mono text-success font-semibold">₹{(r.paid || r.paidAmount || 0).toLocaleString()}</span> },
     {
       header: 'Fee Status',
-      render: (r) => {
-        const st = r.paymentStatus || r.status || 'Pending';
-        return (
-          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold border ${
-            st === 'Paid' ? 'bg-success/10 text-success border-success/30' :
-            st === 'Partial' ? 'bg-warning/10 text-warning border-warning/30' :
-            'bg-risk/10 text-risk border-risk/30'
-          }`}>
-            {st}
-          </span>
-        );
-      }
+      render: (r) => <StatusPill category="fee" status={r.paymentStatus || r.status || 'Pending'} />
     },
     {
       header: 'Actions',
@@ -134,25 +124,26 @@ export default function FeeManagement() {
         </div>
       )}
 
-      <div className="command-card p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="font-serif text-xl font-bold text-ink">
-            {isRestricted ? 'My Fee Account' : 'Fee & Finance — Collection Ledger'}
-          </h2>
-          <p className="text-xs text-ink-muted">
-            {isRestricted
-              ? `Viewing fee statement for ${user?.name}`
-              : 'Institution-wide fee structure, payment tracking & gateway integration'}
-          </p>
+      <div className="command-card p-5 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 className="font-serif text-xl font-bold text-ink">
+              {isRestricted ? 'My Fee Account' : 'Fee & Finance — Collection Ledger'}
+            </h2>
+            <p className="text-xs text-ink-muted">
+              {isRestricted
+                ? `Viewing fee statement for ${user?.name}`
+                : 'Institution-wide fee structure, payment tracking & gateway integration'}
+            </p>
+          </div>
+          {isRestricted && (
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cobalt/5 border border-cobalt/20 text-cobalt text-xs font-mono">
+              <Lock className="w-3 h-3" /> Scoped to your record
+            </span>
+          )}
         </div>
-        {isRestricted && (
-          <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cobalt/5 border border-cobalt/20 text-cobalt text-xs font-mono">
-            <Lock className="w-3 h-3" /> Scoped to your record
-          </span>
-        )}
+        <GrowthArc mode="divider" variant="cobalt" />
       </div>
-
-      <GrowthArc mode="divider" variant="cobalt" />
 
       <DataTable
         title={isRestricted ? 'My Fee Statement' : 'Fee Management & Collection Ledger'}

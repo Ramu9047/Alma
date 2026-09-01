@@ -5,6 +5,7 @@ import { Download, WifiOff } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
 import GrowthArc from '../components/common/GrowthArc';
+import StatusPill from '../components/common/StatusPill';
 import { apiService } from '../services/api';
 
 const DEFAULT_MARKS = [
@@ -177,9 +178,7 @@ export default function ResultsModule() {
                       </span>
                     </td>
                     <td className="p-3.5">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${status === 'Pass' ? 'bg-success/10 text-success border-success/30' : 'bg-risk/10 text-risk border-risk/30'}`}>
-                        {status}
-                      </span>
+                      <StatusPill category="grade" status={status} size="xs" />
                     </td>
                     <td className="p-3.5">
                       <button

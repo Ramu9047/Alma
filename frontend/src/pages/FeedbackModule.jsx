@@ -3,6 +3,7 @@ import { apiService, mockFeedback } from '../services/api';
 import { Send, CornerDownRight, Plus, WifiOff, MessageSquare } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import GrowthArc from '../components/common/GrowthArc';
+import StatusPill from '../components/common/StatusPill';
 
 export default function FeedbackModule() {
   const { user } = useAuth();
@@ -115,9 +116,7 @@ export default function FeedbackModule() {
                     <span className="font-medium text-xs text-ink font-semibold">{authorName}</span>
                     <span className="text-[10px] font-mono text-cobalt bg-cobalt/10 px-2.5 py-0.5 rounded-full border border-cobalt/20 font-semibold">{roleName}</span>
                   </div>
-                  <span className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full font-semibold border ${item.status === 'Resolved' ? 'bg-success/10 text-success border-success/30' : 'bg-warning/10 text-warning border-warning/30'}`}>
-                    {item.status || 'Open'}
-                  </span>
+                  <StatusPill category="feedback" status={item.status || 'Open'} size="xs" />
                 </div>
 
                 <h4 className="font-semibold text-xs text-ink">{item.subject}</h4>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '../components/common/DataTable';
+import StatusPill from '../components/common/StatusPill';
 import { apiService, mockLeaves } from '../services/api';
 import { usePulse } from '../context/PulseContext';
 import { CheckCircle, XCircle, Clock, WifiOff } from 'lucide-react';
@@ -33,18 +34,7 @@ export default function LeaveManagement() {
     { header: 'Reason', render: (r) => <span className="text-ink-muted text-xs">{r.reason}</span> },
     {
       header: 'Decision Status',
-      render: (r) => {
-        const st = (r.status || 'PENDING').toUpperCase();
-        return (
-          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold border ${
-            st === 'APPROVED' ? 'bg-success/10 text-success border-success/30' :
-            st === 'REJECTED' ? 'bg-risk/10 text-risk border-risk/30' :
-            'bg-warning/10 text-warning border-warning/30'
-          }`}>
-            {st}
-          </span>
-        );
-      }
+      render: (r) => <StatusPill category="leave" status={r.status || 'PENDING'} />
     },
     {
       header: 'Workflow Action',

@@ -85,6 +85,17 @@ export default function AttendanceModule() {
         </div>
       )}
 
+      {/* Top Header Overview with GrowthArc */}
+      <div className="command-card p-6 bg-gradient-to-r from-surface via-surface-warm to-surface border border-border space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span className="font-mono text-xs uppercase tracking-wider text-cobalt font-semibold">ATTENDANCE MANAGEMENT</span>
+            <h2 className="font-serif text-2xl font-bold text-ink mt-0.5">Daily Session Roll Call & Monitoring</h2>
+          </div>
+        </div>
+        <GrowthArc mode="divider" variant="cobalt" />
+      </div>
+
       {/* Top Banner Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="command-card p-5 flex items-center justify-between">
@@ -122,8 +133,6 @@ export default function AttendanceModule() {
           </div>
         </div>
       </div>
-
-      <GrowthArc mode="divider" variant="cobalt" />
 
       {/* Attendance Marking Grid */}
       <div className="command-card p-6 space-y-4">

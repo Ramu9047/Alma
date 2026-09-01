@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '../components/common/DataTable';
+import StatusPill from '../components/common/StatusPill';
 import { apiService, mockSessions } from '../services/api';
 import { Plus, WifiOff, X } from 'lucide-react';
 
@@ -145,11 +146,7 @@ export function ManageSessions() {
     { header: 'End Year', render: (r) => <span className="font-mono text-ink">{r.endYear}</span> },
     {
       header: 'Status',
-      render: (r) => (
-        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold ${r.status === 'Active' ? 'bg-success/10 text-success border border-success/30' : 'bg-surface-warm text-ink-muted border border-border'}`}>
-          {r.status}
-        </span>
-      )
+      render: (r) => <StatusPill category="course" status={r.status || 'Active'} size="xs" />
     }
   ];
 

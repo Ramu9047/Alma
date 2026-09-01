@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '../components/common/DataTable';
+import StatusPill from '../components/common/StatusPill';
 import { apiService, mockAuditLogs } from '../services/api';
 import { WifiOff, Filter } from 'lucide-react';
 
@@ -38,18 +39,7 @@ export default function AuditLogView() {
     { header: 'Role', render: (r) => <span className="font-mono text-[10px] bg-cobalt/10 text-cobalt px-2 py-0.5 rounded border border-cobalt/20">{r.actorRole || 'SYSTEM'}</span> },
     {
       header: 'Action',
-      render: (r) => {
-        const act = r.action || '';
-        return (
-          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${
-            act.includes('CREATE') || act.includes('APPROVED') ? 'bg-success/10 text-success border-success/30' :
-            act.includes('UPDATE') || act.includes('REPLIED') ? 'bg-warning/10 text-warning border-warning/30' :
-            'bg-risk/10 text-risk border-risk/30'
-          }`}>
-            {act}
-          </span>
-        );
-      }
+      render: (r) => <StatusPill category="general" status={r.action || ''} size="xs" />
     },
     { header: 'Collection', render: (r) => <span className="font-mono text-ink font-semibold">{r.collectionName || r.collection || '—'}</span> },
     { header: 'Record ID', render: (r) => <span className="font-mono text-xs text-ink-muted">{r.recordId || '—'}</span> }
