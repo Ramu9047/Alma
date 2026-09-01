@@ -135,6 +135,10 @@ export const apiService = {
   updateStaff: (id, s) => apiFetch(`/api/staff/${id}`, { method: 'PUT', body: JSON.stringify(s) }),
   deleteStaff: (id) => apiFetch(`/api/staff/${id}`, { method: 'DELETE' }),
 
+  createCourse: (c) => apiFetch('/api/courses', { method: 'POST', body: JSON.stringify(c) }),
+  updateCourse: (id, c) => apiFetch(`/api/courses/${id}`, { method: 'PUT', body: JSON.stringify(c) }),
+  deleteCourse: (id) => apiFetch(`/api/courses/${id}`, { method: 'DELETE' }),
+
   createSubject: (s) => apiFetch('/api/admin/subjects', { method: 'POST', body: JSON.stringify(s) }),
   updateSubject: (id, s) => apiFetch(`/api/admin/subjects/${id}`, { method: 'PUT', body: JSON.stringify(s) }),
   deleteSubject: (id) => apiFetch(`/api/admin/subjects/${id}`, { method: 'DELETE' }),

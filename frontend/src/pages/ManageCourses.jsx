@@ -12,11 +12,14 @@ export default function ManageCourses() {
   const [editingCourse, setEditingCourse] = useState(null);
   const [formData, setFormData] = useState({ code: '', name: '', department: 'CSE', durationYears: 4, status: 'Active' });
 
+  const loadCourses = async () => {
+    const res = await apiService.getCourses();
+    if (res.data && res.data.length > 0) setCourses(res.data);
+    setIsOffline(res.offline);
+  };
+
   useEffect(() => {
-    apiService.getCourses().then(res => {
-      if (res.data && res.data.length > 0) setCourses(res.data);
-      setIsOffline(res.offline);
-    });
+    loadCourses();
   }, []);
 
   const handleOpenAdd = () => {
@@ -32,24 +35,34 @@ export default function ManageCourses() {
       name: course.name || '',
       department: course.department || 'CSE',
       durationYears: course.duration || course.durationYears || 4,
-      status: 'Active'
+      status: course.status || 'Active'
     });
     setIsModalOpen(true);
   };
 
-  const handleDelete = (course) => {
-    setCourses(prev => prev.filter(c => (c.id || c.courseCode) !== (course.id || course.courseCode)));
+  const handleDelete = async (course) => {
+    if (!window.confirm(`Delete course ${course.name || course.courseCode}?`)) return;
+    await apiService.deleteCourse(course.id || course.courseCode);
+    loadCourses();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = {
+      courseCode: formData.code,
+      name: formData.name,
+      department: formData.department,
+      durationYears: Number(formData.durationYears),
+      status: formData.status || 'Active'
+    };
+
     if (editingCourse) {
-      setCourses(prev => prev.map(c => ((c.id || c.courseCode) === (editingCourse.id || editingCourse.courseCode) ? { ...c, ...formData } : c)));
+      await apiService.updateCourse(editingCourse.id || editingCourse.courseCode, payload);
     } else {
-      const newCrs = { ...formData, id: `crs_${Date.now()}` };
-      setCourses(prev => [...prev, newCrs]);
+      await apiService.createCourse(payload);
     }
     setIsModalOpen(false);
+    loadCourses();
   };
 
   const columns = [

@@ -104,7 +104,10 @@ public class SecurityConfig {
                 // Parent resources
                 .requestMatchers("/api/parent/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "PARENT")
 
-                // Courses are readable by any authenticated user
+                // Courses — mutations (POST/PUT/DELETE) restricted to Admin/HoD; read access (GET) open to all authenticated roles
+                .requestMatchers(HttpMethod.POST, "/api/courses/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD")
+                .requestMatchers(HttpMethod.PUT, "/api/courses/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD")
+                .requestMatchers(HttpMethod.DELETE, "/api/courses/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD")
                 .requestMatchers("/api/courses/**").authenticated()
 
                 // Everything else requires authentication
