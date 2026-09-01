@@ -1,30 +1,69 @@
-import React, { useState } from 'react';
-import { mockStudents } from '../services/api';
+import React, { useState, useEffect } from 'react';
+import { apiService, mockStudents } from '../services/api';
 import { usePulse } from '../context/PulseContext';
-import { ClipboardCheck, CheckCircle2, XCircle, AlertTriangle, Send } from 'lucide-react';
+import { ClipboardCheck, CheckCircle2, XCircle, AlertTriangle, Send, WifiOff } from 'lucide-react';
 import GrowthArc from '../components/common/GrowthArc';
 
 export default function AttendanceModule() {
   const { pushPulseAlert } = usePulse();
   const [selectedDate, setSelectedDate] = useState('2026-07-21');
   const [selectedSubject, setSelectedSubject] = useState('CS301 (Data Structures)');
-  const [records, setRecords] = useState(
-    mockStudents.map(s => ({ ...s, present: s.attendancePct >= 75 }))
-  );
+  const [records, setRecords] = useState([]);
+  const [isOffline, setIsOffline] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const toggleAttendance = (id) => {
+  const loadRegister = async () => {
+    const studentsRes = await apiService.getStudents();
+    const studentList = studentsRes.data || mockStudents;
+    setIsOffline(studentsRes.offline);
+
+    const subjectCode = selectedSubject.split(' ')[0];
+    const regRes = await apiService.getAttendanceRegister(selectedDate, subjectCode);
+    const existingReg = regRes.data || [];
+
+    const mapped = studentList.map(s => {
+      const sId = s.studentId || s.rollNumber || s.id;
+      const found = existingReg.find(r => r.studentId === sId);
+      const isPresent = found ? found.present : ((s.attendancePercent ?? s.attendancePct ?? 80) >= 75);
+      return {
+        ...s,
+        studentId: sId,
+        rollNumber: s.studentId || s.rollNumber || sId,
+        attendancePct: s.attendancePercent ?? s.attendancePct ?? 80,
+        present: isPresent
+      };
+    });
+
+    setRecords(mapped);
+  };
+
+  useEffect(() => {
+    loadRegister();
+  }, [selectedDate, selectedSubject]);
+
+  const toggleAttendance = (studentId) => {
     setRecords(prev =>
-      prev.map(r => (r.id === id ? { ...r, present: !r.present } : r))
+      prev.map(r => (r.studentId === studentId ? { ...r, present: !r.present } : r))
     );
   };
 
-  const handleSaveAttendance = () => {
+  const handleSaveAttendance = async () => {
+    setSaving(true);
+    const subjectCode = selectedSubject.split(' ')[0];
+    const payloadRecords = records.map(r => ({
+      studentId: r.studentId,
+      present: r.present
+    }));
+
+    await apiService.submitAttendance(selectedDate, subjectCode, payloadRecords);
+
     const presentCount = records.filter(r => r.present).length;
     const total = records.length;
     const lowAttendanceCount = records.filter(r => !r.present && r.attendancePct < 75).length;
 
     setSubmitted(true);
+    setSaving(false);
     pushPulseAlert(
       `Attendance marked for ${selectedSubject}: ${presentCount}/${total} present. ${lowAttendanceCount} low-attendance alerts generated.`
     );
@@ -32,10 +71,20 @@ export default function AttendanceModule() {
   };
 
   const totalPresent = records.filter(r => r.present).length;
-  const overallPct = Math.round((totalPresent / records.length) * 100);
+  const overallPct = records.length > 0 ? Math.round((totalPresent / records.length) * 100) : 0;
 
   return (
     <div className="space-y-6">
+      {isOffline && (
+        <div className="p-3 bg-warning/10 border border-warning/30 text-warning text-xs font-mono rounded-xl flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <WifiOff className="w-4 h-4" />
+            <span>Backend offline — displaying cached demo dataset · DEMO MODE</span>
+          </div>
+          <span className="px-2 py-0.5 bg-warning/20 rounded text-[10px] font-bold">DEMO MODE</span>
+        </div>
+      )}
+
       {/* Top Banner Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="command-card p-5 flex items-center justify-between">
@@ -113,8 +162,8 @@ export default function AttendanceModule() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {records.map(student => (
             <div
-              key={student.id}
-              onClick={() => toggleAttendance(student.id)}
+              key={student.studentId}
+              onClick={() => toggleAttendance(student.studentId)}
               className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
                 student.present
                   ? 'bg-surface-warm/60 border-success/40 hover:border-success'
@@ -150,10 +199,11 @@ export default function AttendanceModule() {
         <div className="flex justify-end pt-4 border-t border-border">
           <button
             onClick={handleSaveAttendance}
+            disabled={saving}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl btn-cobalt text-xs font-semibold"
           >
             <Send className="w-4 h-4" />
-            <span>Submit Attendance Register</span>
+            <span>{saving ? 'Submitting...' : 'Submit Attendance Register'}</span>
           </button>
         </div>
       </div>

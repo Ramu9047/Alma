@@ -8,6 +8,7 @@ import java.util.List;
 public interface StudentRepository extends MongoRepository<Student, String> {
     Optional<Student> findByStudentId(String studentId);
     Optional<Student> findByEmail(String email);
+    Optional<Student> findByParentUsername(String parentUsername);
     List<Student> findByDepartment(String department);
     List<Student> findByAttendancePercentLessThan(double threshold);
 }

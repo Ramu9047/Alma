@@ -168,11 +168,19 @@ export default function NexusOrbCopilot() {
         body: JSON.stringify({ prompt: userText })
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        throw new Error(data.error || `HTTP ${res.status}`);
+        let errMsg = `Session expired or insufficient permissions (HTTP ${res.status})`;
+        try {
+          const contentType = res.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errData = await res.json();
+            if (errData?.error) errMsg = errData.error;
+          }
+        } catch (_) {}
+        throw new Error(errMsg);
       }
+
+      const data = await res.json();
 
       // Flag risk alerts based on LLM answer content
       const answerLower = (data.answer || '').toLowerCase();

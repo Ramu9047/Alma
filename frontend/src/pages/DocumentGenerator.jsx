@@ -1,20 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
-import { Download, ShieldCheck } from 'lucide-react';
-import { mockStudents } from '../services/api';
+import { Download, ShieldCheck, WifiOff } from 'lucide-react';
+import { apiService, mockStudents } from '../services/api';
 import GrowthArc from '../components/common/GrowthArc';
 
 export default function DocumentGenerator() {
+  const [students, setStudents] = useState(mockStudents);
   const [selectedStudent, setSelectedStudent] = useState(mockStudents[0]);
   const [docType, setDocType] = useState('bonafide');
+  const [isOffline, setIsOffline] = useState(false);
+
+  useEffect(() => {
+    async function loadStudents() {
+      const res = await apiService.getStudents();
+      if (res.data && res.data.length > 0) {
+        const mapped = res.data.map(s => ({
+          ...s,
+          rollNumber: s.studentId || s.rollNumber || 'STD-000',
+          session: s.batch || s.session || '2024-2028'
+        }));
+        setStudents(mapped);
+        setSelectedStudent(mapped[0]);
+      }
+      setIsOffline(res.offline);
+    }
+    loadStudents();
+  }, []);
 
   const generatePDFDocument = () => {
+    if (!selectedStudent) return;
     const doc = new jsPDF();
 
     if (docType === 'bonafide') {
-      doc.setFillColor(27, 36, 48); // Deep academic navy
+      doc.setFillColor(27, 36, 48);
       doc.rect(0, 0, 210, 35, 'F');
-      doc.setTextColor(212, 160, 23); // Gold accent
+      doc.setTextColor(212, 160, 23);
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
       doc.text('ALMA ACADEMIC INSTITUTION', 14, 22);
@@ -26,14 +46,14 @@ export default function DocumentGenerator() {
       doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
       doc.text(
-        `This is to certify that ${selectedStudent.name} (Roll No: ${selectedStudent.rollNumber}) is a bonafide student of this institution, currently enrolled in the ${selectedStudent.course} program for the academic session ${selectedStudent.session}.`,
+        `This is to certify that ${selectedStudent.name} (Roll No: ${selectedStudent.rollNumber}) is a bonafide student of this institution, currently enrolled in the ${selectedStudent.course} program for the academic session ${selectedStudent.session || selectedStudent.batch || '2024-2028'}.`,
         14,
         75,
         { maxWidth: 180 }
       );
       doc.text('This certificate is issued for official administrative / passport / loan verification purposes.', 14, 105);
 
-      doc.text('Date: 21st July 2026', 14, 150);
+      doc.text('Date: 1st September 2026', 14, 150);
       doc.text('Registrar / Principal Signature', 140, 150);
     } else if (docType === 'idcard') {
       doc.setFillColor(27, 36, 48);
@@ -58,6 +78,16 @@ export default function DocumentGenerator() {
 
   return (
     <div className="space-y-6">
+      {isOffline && (
+        <div className="p-3 bg-warning/10 border border-warning/30 text-warning text-xs font-mono rounded-xl flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <WifiOff className="w-4 h-4" />
+            <span>Backend offline — displaying cached demo student roster · DEMO MODE</span>
+          </div>
+          <span className="px-2 py-0.5 bg-warning/20 rounded text-[10px] font-bold">DEMO MODE</span>
+        </div>
+      )}
+
       <div className="command-card p-6 space-y-4">
         <div className="border-b border-border pb-4">
           <h2 className="font-serif text-xl font-bold text-ink">Official Document Generator</h2>
@@ -71,12 +101,15 @@ export default function DocumentGenerator() {
             <div>
               <label className="block text-xs font-mono text-ink-muted mb-1">SELECT STUDENT:</label>
               <select
-                value={selectedStudent.id}
-                onChange={e => setSelectedStudent(mockStudents.find(s => s.id === e.target.value))}
+                value={selectedStudent?.id || selectedStudent?.studentId}
+                onChange={e => {
+                  const found = students.find(s => (s.id || s.studentId) === e.target.value);
+                  if (found) setSelectedStudent(found);
+                }}
                 className="w-full px-3 py-2 bg-surface-warm border border-border rounded-xl text-xs font-mono text-ink"
               >
-                {mockStudents.map(s => (
-                  <option key={s.id} value={s.id}>{s.name} ({s.rollNumber})</option>
+                {students.map(s => (
+                  <option key={s.id || s.studentId} value={s.id || s.studentId}>{s.name} ({s.rollNumber})</option>
                 ))}
               </select>
             </div>
@@ -107,8 +140,8 @@ export default function DocumentGenerator() {
             <span className="text-cobalt font-semibold flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-success" /> ALMA VERIFIED PREVIEW SPECS
             </span>
-            <p className="text-ink-muted text-[11px]">Selected: {selectedStudent.name}</p>
-            <p className="text-ink-muted text-[11px]">Roll Number: {selectedStudent.rollNumber}</p>
+            <p className="text-ink-muted text-[11px]">Selected: {selectedStudent?.name}</p>
+            <p className="text-ink-muted text-[11px]">Roll Number: {selectedStudent?.rollNumber}</p>
             <p className="text-ink-muted text-[11px]">Verification Hash: SHA256-AUTHENTICATED</p>
           </div>
         </div>

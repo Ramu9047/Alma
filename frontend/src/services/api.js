@@ -144,5 +144,19 @@ export const apiService = {
   deleteTimetable: (id) => apiFetch(`/api/admin/timetable/${id}`, { method: 'DELETE' }),
 
   decideLeave: (leaveId, decision) => apiFetch(`/api/leaves/${leaveId}/decision`, { method: 'PUT', body: JSON.stringify({ decision }) }),
-  payFee: (feeId, amount) => apiFetch(`/api/admin/fees/${feeId}/pay`, { method: 'PUT', body: JSON.stringify({ amount }) })
+  payFee: (feeId, amount) => apiFetch(`/api/admin/fees/${feeId}/pay`, { method: 'PUT', body: JSON.stringify({ amount }) }),
+
+  // Attendance
+  submitAttendance: (date, subjectCode, records) => apiFetch('/api/attendance/bulk', { method: 'POST', body: JSON.stringify({ date, subjectCode, records }) }),
+  getAttendanceRegister: (date, subjectCode) => apiFetch(`/api/attendance?date=${date}&subjectCode=${subjectCode}`, {}, []),
+  getAttendanceSummary: (studentId) => apiFetch(`/api/attendance/student/${studentId}/summary`, {}, null),
+  getMyAttendanceSummary: () => apiFetch('/api/attendance/me/summary', {}, null),
+
+  // Feedback
+  getFeedback: () => apiFetch('/api/feedback', {}, mockFeedback),
+  createFeedback: (f) => apiFetch('/api/feedback', { method: 'POST', body: JSON.stringify(f) }),
+  replyFeedback: (id, text) => apiFetch(`/api/feedback/${id}/reply`, { method: 'POST', body: JSON.stringify({ text }) }),
+
+  // Parent Portal
+  getParentChild: () => apiFetch('/api/parent/me/child', {}, null)
 };

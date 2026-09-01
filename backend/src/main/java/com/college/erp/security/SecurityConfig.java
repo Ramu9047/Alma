@@ -7,14 +7,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -38,18 +40,50 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationEntryPoint customAuthenticationEntryPoint() {
+        return (request, response, authException) -> {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"error\": \"Session expired or unauthenticated. Please log in.\"}");
+            response.getWriter().flush();
+        };
+    }
+
+    @Bean
+    public AccessDeniedHandler customAccessDeniedHandler() {
+        return (request, response, accessDeniedException) -> {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"error\": \"Insufficient permissions for this resource.\"}");
+            response.getWriter().flush();
+        };
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(customAuthenticationEntryPoint())
+                .accessDeniedHandler(customAccessDeniedHandler())
+            )
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers("/api/auth/**", "/ws-pulse/**", "/actuator/**").permitAll()
 
                 // Leave management — requires at minimum Admin/HoD role
-                // Students and Parents cannot approve/reject leaves
                 .requestMatchers("/api/leaves/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD")
+
+                // Attendance endpoints
+                .requestMatchers("/api/attendance/me/summary", "/api/attendance/student/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF", "STUDENT")
+                .requestMatchers("/api/attendance/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF")
+
+                // Feedback endpoints — any authenticated user can read/create; replies checked in controller
+                .requestMatchers("/api/feedback/**").authenticated()
 
                 // Copilot action execution — admin only
                 .requestMatchers("/api/copilot/execute-action").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD")
@@ -73,7 +107,6 @@ public class SecurityConfig {
                 // Everything else requires authentication
                 .anyRequest().authenticated()
             )
-            // Register the JWT filter BEFORE Spring's default auth filter
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

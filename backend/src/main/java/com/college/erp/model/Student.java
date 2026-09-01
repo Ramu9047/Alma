@@ -20,6 +20,7 @@ public class Student {
     private int backlogs;
     private String phone;
     private String parentEmail;
+    private String parentUsername;
     private List<String> assignedSubjectCodes;
 
     // ── Getters & Setters ─────────────────────────────────────────────────
@@ -49,6 +50,8 @@ public class Student {
     public void setPhone(String phone) { this.phone = phone; }
     public String getParentEmail() { return parentEmail; }
     public void setParentEmail(String parentEmail) { this.parentEmail = parentEmail; }
+    public String getParentUsername() { return parentUsername; }
+    public void setParentUsername(String parentUsername) { this.parentUsername = parentUsername; }
     public List<String> getAssignedSubjectCodes() { return assignedSubjectCodes; }
     public void setAssignedSubjectCodes(List<String> assignedSubjectCodes) { this.assignedSubjectCodes = assignedSubjectCodes; }
 }

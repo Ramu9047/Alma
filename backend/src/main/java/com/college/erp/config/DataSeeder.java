@@ -48,27 +48,29 @@ public class DataSeeder implements CommandLineRunner {
 
     private void seedStudents() {
         if (studentRepo.count() > 0) { log.info("Students already seeded — skipping"); return; }
+        Student s1 = student("CS2024-042", "Alex Rivera",      "alex@alma.edu",    "CSE", "B.Tech CSE",          "2024", 88.0, 3.6, "Paid",    0, "9900001111", "parent1@alma.edu", "parent_001");
         studentRepo.saveAll(List.of(
-            student("CS2024-042", "Alex Rivera",      "alex@alma.edu",    "CSE", "B.Tech CSE",          "2024", 88.0, 3.6, "Paid",    0, "9900001111", "parent1@alma.edu"),
-            student("EC2023-017", "Ananya Patel",     "ananya@alma.edu",  "ECE", "B.Tech ECE",          "2023", 74.0, 2.9, "Partial", 1, "9900002222", "parent2@alma.edu"),
-            student("ME2023-031", "Vikram Singh",     "vikram@alma.edu",  "ME",  "B.Tech Mech",         "2023", 62.0, 2.4, "Overdue", 2, "9900003333", "parent3@alma.edu"),
-            student("CS2024-055", "Priya Sharma",     "priya@alma.edu",   "CSE", "B.Tech CSE",          "2024", 91.0, 3.8, "Paid",    0, "9900004444", "parent4@alma.edu"),
-            student("EC2024-008", "Rahul Nair",       "rahul@alma.edu",   "ECE", "B.Tech ECE",          "2024", 95.0, 3.9, "Paid",    0, "9900005555", "parent5@alma.edu"),
-            student("ME2024-022", "Sneha Iyer",       "sneha@alma.edu",   "ME",  "B.Tech Mech",         "2024", 79.0, 3.1, "Paid",    0, "9900006666", "parent6@alma.edu"),
-            student("CS2023-011", "Arjun Mehta",      "arjun@alma.edu",   "CSE", "B.Tech CSE",          "2023", 85.0, 3.5, "Paid",    0, "9900007777", "parent7@alma.edu"),
-            student("EC2024-033", "Divya Krishnan",   "divya@alma.edu",   "ECE", "B.Tech ECE",          "2024", 72.0, 2.7, "Overdue", 1, "9900008888", "parent8@alma.edu")
+            s1,
+            student("EC2023-017", "Ananya Patel",     "ananya@alma.edu",  "ECE", "B.Tech ECE",          "2023", 74.0, 2.9, "Partial", 1, "9900002222", "parent2@alma.edu", "parent_002"),
+            student("ME2023-031", "Vikram Singh",     "vikram@alma.edu",  "ME",  "B.Tech Mech",         "2023", 62.0, 2.4, "Overdue", 2, "9900003333", "parent3@alma.edu", "parent_003"),
+            student("CS2024-055", "Priya Sharma",     "priya@alma.edu",   "CSE", "B.Tech CSE",          "2024", 91.0, 3.8, "Paid",    0, "9900004444", "parent4@alma.edu", "parent_004"),
+            student("EC2024-008", "Rahul Nair",       "rahul@alma.edu",   "ECE", "B.Tech ECE",          "2024", 95.0, 3.9, "Paid",    0, "9900005555", "parent5@alma.edu", "parent_005"),
+            student("ME2024-022", "Sneha Iyer",       "sneha@alma.edu",   "ME",  "B.Tech Mech",         "2024", 79.0, 3.1, "Paid",    0, "9900006666", "parent6@alma.edu", "parent_006"),
+            student("CS2023-011", "Arjun Mehta",      "arjun@alma.edu",   "CSE", "B.Tech CSE",          "2023", 85.0, 3.5, "Paid",    0, "9900007777", "parent7@alma.edu", "parent_007"),
+            student("EC2024-033", "Divya Krishnan",   "divya@alma.edu",   "ECE", "B.Tech ECE",          "2024", 72.0, 2.7, "Overdue", 1, "9900008888", "parent8@alma.edu", "parent_008")
         ));
         log.info("Seeded {} students", studentRepo.count());
     }
 
     private Student student(String studentId, String name, String email, String dept,
                             String course, String batch, double att, double gpa,
-                            String feeStatus, int backlogs, String phone, String parentEmail) {
+                            String feeStatus, int backlogs, String phone, String parentEmail, String parentUsername) {
         Student s = new Student();
         s.setStudentId(studentId); s.setName(name); s.setEmail(email);
         s.setDepartment(dept); s.setCourse(course); s.setBatch(batch);
         s.setAttendancePercent(att); s.setGpa(gpa); s.setFeeStatus(feeStatus);
         s.setBacklogs(backlogs); s.setPhone(phone); s.setParentEmail(parentEmail);
+        s.setParentUsername(parentUsername);
         return s;
     }
 
