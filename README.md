@@ -2,7 +2,7 @@
 
 > *"The modern academic ERP designed for real-time institutional intelligence, predictive risk monitoring, and seamless role-based access."*
 
-[🌐 Live Web Application](https://alma.vercel.app) • [⚙️ Backend API Health](https://alma-backend-dtpq.onrender.com/api/auth/health) • [📖 Deployment Guide](#-production-deployment)
+[🌐 Live Web Application](https://alma-lilac.vercel.app/) • [⚙️ Backend API Health](https://alma-backend-dtpq.onrender.com/api/auth/health) • [📖 Deployment Guide](#-production-deployment)
 
 ## 🎬 Live Application Walkthrough
 
