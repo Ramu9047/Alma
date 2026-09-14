@@ -3,9 +3,13 @@ import DataTable from '../components/common/DataTable';
 import StatusPill from '../components/common/StatusPill';
 import { apiService, mockLeaves } from '../services/api';
 import { usePulse } from '../context/PulseContext';
-import { CheckCircle, XCircle, Clock, WifiOff } from 'lucide-react';
+import { useAuth, ROLES } from '../context/AuthContext';
+import { CheckCircle, XCircle, Clock, WifiOff, ShieldAlert } from 'lucide-react';
 
 export default function LeaveManagement() {
+  const { user } = useAuth();
+  const canApprove = (user?.role === ROLES.SUPER_ADMIN || user?.role === ROLES.HOD_ADMIN);
+
   const { pushPulseAlert } = usePulse();
   const [leaves, setLeaves] = useState([]);
   const [isOffline, setIsOffline] = useState(false);
@@ -21,6 +25,7 @@ export default function LeaveManagement() {
   }, []);
 
   const handleUpdateStatus = async (leaveItem, newStatus) => {
+    if (!canApprove) return;
     const targetId = leaveItem.leaveId || leaveItem.id || 'lev_01';
     await apiService.decideLeave(targetId, newStatus.toUpperCase());
     pushPulseAlert(`Leave request ${targetId} updated to ${newStatus}`);
@@ -40,6 +45,13 @@ export default function LeaveManagement() {
       header: 'Workflow Action',
       render: (r) => {
         const st = (r.status || 'PENDING').toUpperCase();
+        if (!canApprove) {
+          return (
+            <span className="text-xs font-mono text-ink-muted italic bg-surface-warm px-2.5 py-1 rounded-lg border border-border">
+              Pending HoD Review
+            </span>
+          );
+        }
         return (
           <div className="flex items-center gap-2">
             {st === 'PENDING' && (
@@ -57,6 +69,9 @@ export default function LeaveManagement() {
                   <XCircle className="w-3.5 h-3.5" /> Reject
                 </button>
               </>
+            )}
+            {st !== 'PENDING' && (
+              <span className="text-xs font-mono text-ink-muted">Finalized</span>
             )}
           </div>
         );

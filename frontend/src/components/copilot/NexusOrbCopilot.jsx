@@ -229,10 +229,10 @@ export default function NexusOrbCopilot() {
   return (
     <>
       {/* Docked Glowing Alma Orb (Bottom Right) */}
-      <div className="fixed bottom-6 right-6 z-40 flex items-center gap-3">
-        {/* Platform-aware shortcut hint */}
-        <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface border border-border text-[11px] font-mono text-ink-muted shadow-warm-sm">
-          Press <kbd className="px-1.5 py-0.5 rounded bg-surface-warm border border-border text-ink font-semibold">{SHORTCUT_LABEL}</kbd> for Copilot
+      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end group">
+        {/* Tooltip floating smoothly above the orb on hover */}
+        <span className="mb-2 hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-glass backdrop-blur-xl border border-border text-[10.5px] font-mono text-ink shadow-warm-md transition-all duration-200 opacity-0 group-hover:opacity-100 transform translate-y-1 group-hover:translate-y-0 pointer-events-none select-none whitespace-nowrap">
+          Press <kbd className="px-1.5 py-0.5 rounded-md bg-cobalt/10 text-cobalt border border-cobalt/25 font-bold">{SHORTCUT_LABEL}</kbd> for Copilot
         </span>
 
         <button

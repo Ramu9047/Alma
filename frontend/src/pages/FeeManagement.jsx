@@ -11,6 +11,7 @@ import StatusPill from '../components/common/StatusPill';
 export default function FeeManagement() {
   const { pushPulseAlert } = usePulse();
   const { user } = useAuth();
+  const role = user?.role;
   const isSuperAdmin = (role === ROLES.SUPER_ADMIN);
   const isStudentOrParent = (role === ROLES.STUDENT || role === ROLES.PARENT);
   const isDenied = !isSuperAdmin && !isStudentOrParent;

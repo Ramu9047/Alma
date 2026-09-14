@@ -58,7 +58,12 @@ public class LeaveController {
             @RequestBody Map<String, String> body,
             Authentication auth) {
 
-        return leaveRepo.findByLeaveId(leaveId).map(leave -> {
+        java.util.Optional<Leave> found = leaveRepo.findByLeaveId(leaveId);
+        if (found.isEmpty()) {
+            found = leaveRepo.findById(leaveId);
+        }
+
+        return found.map(leave -> {
             Leave before = snapshot(leave);
             String decision = body.getOrDefault("decision", "").toUpperCase();
             if (!decision.equals("APPROVED") && !decision.equals("REJECTED")) {

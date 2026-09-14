@@ -223,7 +223,7 @@ export default function DataTable({
       </div>
 
       {/* Table Pagination Footer */}
-      <div className="p-3.5 border-t border-border bg-surface-warm/50 text-xs font-mono text-ink-muted flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="p-3.5 border-t border-border bg-surface-warm/50 text-xs font-mono text-ink-muted flex flex-col sm:flex-row items-center justify-between gap-3 sm:pr-20">
         <div className="flex items-center gap-2">
           <span>Showing {sortedData.length > 0 ? startIndex + 1 : 0}–{Math.min(startIndex + pageSize, sortedData.length)} of {sortedData.length} records</span>
           {sortedData.length > 0 && (

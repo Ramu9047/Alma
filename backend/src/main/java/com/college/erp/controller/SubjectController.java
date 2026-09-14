@@ -40,9 +40,17 @@ public class SubjectController {
         return ResponseEntity.status(201).body(saved);
     }
 
+    private java.util.Optional<Subject> findSubject(String key) {
+        java.util.Optional<Subject> s = subjectRepo.findById(key);
+        if (s.isEmpty()) {
+            s = subjectRepo.findBySubjectCode(key);
+        }
+        return s;
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Subject> update(@PathVariable String id, @RequestBody Subject body, Authentication auth) {
-        return subjectRepo.findById(id).map(existing -> {
+        return findSubject(id).map(existing -> {
             Subject before = cloneSubject(existing);
             existing.setSubjectCode(body.getSubjectCode());
             existing.setName(body.getName());
@@ -58,10 +66,10 @@ public class SubjectController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id, Authentication auth) {
-        return subjectRepo.findById(id).map(subject -> {
+        return findSubject(id).map(subject -> {
             auditService.log(auth != null ? auth.getName() : "system",
-                extractRole(auth), "SUBJECT_DELETED", "subjects", id, subject, null);
-            subjectRepo.deleteById(id);
+                extractRole(auth), "SUBJECT_DELETED", "subjects", subject.getId(), subject, null);
+            subjectRepo.delete(subject);
             return ResponseEntity.noContent().<Void>build();
         }).orElse(ResponseEntity.notFound().build());
     }

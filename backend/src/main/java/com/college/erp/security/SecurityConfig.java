@@ -77,8 +77,9 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers("/api/auth/**", "/ws-pulse/**", "/actuator/**").permitAll()
 
-                // Leave management — requires at minimum Admin/HoD role
-                .requestMatchers("/api/leaves/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD")
+                // Leave management — decision approvals restricted strictly to Admin/HoD; read/apply open to Staff & Students
+                .requestMatchers(HttpMethod.PUT, "/api/leaves/*/decision").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD")
+                .requestMatchers("/api/leaves/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF", "STUDENT")
 
                 // Attendance endpoints
                 .requestMatchers("/api/attendance/me/summary", "/api/attendance/student/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF", "STUDENT")
@@ -92,14 +93,21 @@ public class SecurityConfig {
                 .requestMatchers("/api/copilot/execute-action").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD")
                 .requestMatchers("/api/copilot/**").authenticated()
 
-                // Admin-level data management & Security Audit Logs — Super Admin only
-                .requestMatchers("/api/admin/**", "/api/audit-log/**", "/api/staff/manage/**").hasRole("SUPER_ADMIN")
+                // Analytics, Risk, Subjects & Timetable endpoints — accessible to Staff, Admin/HoD, and Super Admin
+                .requestMatchers("/api/admin/analytics", "/api/admin/risk", "/api/admin/subjects/**", "/api/admin/timetable/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF")
+                .requestMatchers("/api/admin/notifications/**").authenticated()
+
+                // Institutional Fees, Security Audit Logs & Staff Management — Super Admin only
+                .requestMatchers("/api/admin/fees/**", "/api/audit-log/**", "/api/staff/manage/**").hasRole("SUPER_ADMIN")
+
+                // General admin management endpoints
+                .requestMatchers("/api/admin/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD")
 
                 // Staff/faculty resources
                 .requestMatchers("/api/staff/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF")
 
-                // Student resources
-                .requestMatchers("/api/student/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STUDENT")
+                // Student resources — accessible to Staff (for roll call / grading), Admin/HoD, Super Admin, and Student
+                .requestMatchers("/api/student/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF", "STUDENT")
 
                 // Results / Marks — updates (POST/PUT) restricted to Staff/Admin/HoD; GET open to authenticated users
                 .requestMatchers(HttpMethod.POST, "/api/results/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF")
@@ -107,7 +115,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/results/**").authenticated()
 
                 // Parent resources
-                .requestMatchers("/api/parent/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "PARENT")
+                .requestMatchers("/api/parent/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF", "PARENT")
 
                 // Courses — mutations (POST/PUT/DELETE) restricted to Admin/HoD; read access (GET) open to all authenticated roles
                 .requestMatchers(HttpMethod.POST, "/api/courses/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD")

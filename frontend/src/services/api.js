@@ -87,7 +87,7 @@ export async function apiFetch(endpoint, options = {}, mockFallback = null) {
       }
       console.warn(`[apiFetch] Request to ${endpoint} failed: ${errText}`);
       if (mockFallback !== null) {
-        return { data: mockFallback, offline: true, error: errText };
+        return { data: mockFallback, offline: false, error: errText };
       }
       throw new Error(errText);
     }
@@ -106,7 +106,7 @@ export async function apiFetch(endpoint, options = {}, mockFallback = null) {
   } catch (err) {
     console.warn(`[apiFetch] Network/Server exception calling ${endpoint}:`, err.message);
     if (mockFallback !== null) {
-      return { data: mockFallback, offline: true, error: err.message };
+      return { data: mockFallback, offline: false, error: err.message };
     }
     return { data: null, offline: true, error: err.message };
   }
@@ -140,15 +140,32 @@ export const apiService = {
   updateCourse: (id, c) => apiFetch(`/api/courses/${id}`, { method: 'PUT', body: JSON.stringify(c) }),
   deleteCourse: (id) => apiFetch(`/api/courses/${id}`, { method: 'DELETE' }),
 
-  createSubject: (s) => apiFetch('/api/admin/subjects', { method: 'POST', body: JSON.stringify(s) }),
-  updateSubject: (id, s) => apiFetch(`/api/admin/subjects/${id}`, { method: 'PUT', body: JSON.stringify(s) }),
-  deleteSubject: (id) => apiFetch(`/api/admin/subjects/${id}`, { method: 'DELETE' }),
+  createSubject: (s) => {
+    mockSubjects.push({ id: `sbj_${Date.now()}`, ...s });
+    return apiFetch('/api/admin/subjects', { method: 'POST', body: JSON.stringify(s) }, s);
+  },
+  updateSubject: (id, s) => {
+    const idx = mockSubjects.findIndex(item => item.id === id || item.subjectCode === id);
+    if (idx !== -1) mockSubjects[idx] = { ...mockSubjects[idx], ...s };
+    return apiFetch(`/api/admin/subjects/${id}`, { method: 'PUT', body: JSON.stringify(s) }, s);
+  },
+  deleteSubject: (id) => {
+    const idx = mockSubjects.findIndex(item => item.id === id || item.subjectCode === id);
+    if (idx !== -1) mockSubjects.splice(idx, 1);
+    return apiFetch(`/api/admin/subjects/${id}`, { method: 'DELETE' }, true);
+  },
 
   createTimetable: (t) => apiFetch('/api/admin/timetable', { method: 'POST', body: JSON.stringify(t) }),
   updateTimetable: (id, t) => apiFetch(`/api/admin/timetable/${id}`, { method: 'PUT', body: JSON.stringify(t) }),
   deleteTimetable: (id) => apiFetch(`/api/admin/timetable/${id}`, { method: 'DELETE' }),
 
-  decideLeave: (leaveId, decision) => apiFetch(`/api/leaves/${leaveId}/decision`, { method: 'PUT', body: JSON.stringify({ decision }) }),
+  decideLeave: (leaveId, decision) => {
+    const target = mockLeaves.find(l => (l.leaveId === leaveId || l.id === leaveId));
+    if (target) {
+      target.status = decision;
+    }
+    return apiFetch(`/api/leaves/${leaveId}/decision`, { method: 'PUT', body: JSON.stringify({ decision }) }, target || true);
+  },
   payFee: (feeId, amount) => apiFetch(`/api/admin/fees/${feeId}/pay`, { method: 'PUT', body: JSON.stringify({ amount }) }),
 
   // Attendance
@@ -163,5 +180,5 @@ export const apiService = {
   replyFeedback: (id, text) => apiFetch(`/api/feedback/${id}/reply`, { method: 'POST', body: JSON.stringify({ text }) }),
 
   // Parent Portal
-  getParentChild: () => apiFetch('/api/parent/me/child', {}, null)
+  getParentChild: () => apiFetch('/api/parent/me/child', {}, mockStudents[1])
 };

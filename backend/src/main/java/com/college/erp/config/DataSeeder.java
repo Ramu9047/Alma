@@ -169,17 +169,29 @@ public class DataSeeder implements CommandLineRunner {
 
     private void seedLeaves() {
         if (leaveRepo.count() > 0) { log.info("Leaves already seeded — skipping"); return; }
-        Leave l = new Leave();
-        l.setLeaveId("lev_01");
-        l.setApplicantUsername("staff_001");
-        l.setApplicantName("Prof. Marcus Vance");
-        l.setApplicantRole("STAFF");
-        l.setLeaveType("Medical Leave");
-        l.setStartDate("2026-07-25");
-        l.setEndDate("2026-07-27");
-        l.setReason("Medical appointment");
-        l.setStatus("PENDING");
-        leaveRepo.save(l);
+        Leave l1 = new Leave();
+        l1.setLeaveId("lev_01");
+        l1.setApplicantUsername("staff_001");
+        l1.setApplicantName("Prof. Marcus Vance");
+        l1.setApplicantRole("STAFF");
+        l1.setLeaveType("Medical Leave");
+        l1.setStartDate("2026-07-25");
+        l1.setEndDate("2026-07-27");
+        l1.setReason("Medical appointment");
+        l1.setStatus("PENDING");
+
+        Leave l2 = new Leave();
+        l2.setLeaveId("lev_02");
+        l2.setApplicantUsername("student_001");
+        l2.setApplicantName("Alex Rivera");
+        l2.setApplicantRole("STUDENT");
+        l2.setLeaveType("Casual Leave");
+        l2.setStartDate("2026-07-22");
+        l2.setEndDate("2026-07-22");
+        l2.setReason("Personal Emergency");
+        l2.setStatus("APPROVED");
+
+        leaveRepo.saveAll(List.of(l1, l2));
         log.info("Seeded {} leave records", leaveRepo.count());
     }
 

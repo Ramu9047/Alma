@@ -205,11 +205,14 @@ export default function AttendanceModule() {
           ))}
         </div>
 
-        <div className="flex justify-end pt-4 border-t border-border">
+        <div className="flex items-center justify-between pt-4 border-t border-border sm:pr-20">
+          <div className="text-[11px] font-mono text-ink-muted">
+            Turnout Summary: <span className="font-bold text-cobalt">{records.filter(r => r.present).length}</span> / {records.length} Present ({records.length ? Math.round((records.filter(r => r.present).length / records.length) * 100) : 0}%)
+          </div>
           <button
             onClick={handleSaveAttendance}
             disabled={saving}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl btn-cobalt text-xs font-semibold"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl btn-cobalt text-xs font-semibold shadow-warm-sm"
           >
             <Send className="w-4 h-4" />
             <span>{saving ? 'Submitting...' : 'Submit Attendance Register'}</span>
