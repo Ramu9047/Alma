@@ -10,7 +10,15 @@ export default function ManageCourses() {
   const [isOffline, setIsOffline] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
-  const [formData, setFormData] = useState({ code: '', name: '', department: 'CSE', durationYears: 4, status: 'Active' });
+  const [formData, setFormData] = useState({
+    code: '',
+    name: '',
+    department: 'CSE',
+    duration: 4,
+    totalSeats: 120,
+    enrolledCount: 0,
+    status: 'Active'
+  });
 
   const loadCourses = async () => {
     const res = await apiService.getCourses();
@@ -24,7 +32,15 @@ export default function ManageCourses() {
 
   const handleOpenAdd = () => {
     setEditingCourse(null);
-    setFormData({ code: '', name: '', department: 'CSE', durationYears: 4, status: 'Active' });
+    setFormData({
+      code: '',
+      name: '',
+      department: 'CSE',
+      duration: 4,
+      totalSeats: 120,
+      enrolledCount: 0,
+      status: 'Active'
+    });
     setIsModalOpen(true);
   };
 
@@ -34,7 +50,9 @@ export default function ManageCourses() {
       code: course.courseCode || course.code || '',
       name: course.name || '',
       department: course.department || 'CSE',
-      durationYears: course.duration || course.durationYears || 4,
+      duration: course.duration ?? 4,
+      totalSeats: course.totalSeats ?? 120,
+      enrolledCount: course.enrolledCount ?? 0,
       status: course.status || 'Active'
     });
     setIsModalOpen(true);
@@ -52,7 +70,9 @@ export default function ManageCourses() {
       courseCode: formData.code,
       name: formData.name,
       department: formData.department,
-      durationYears: Number(formData.durationYears),
+      duration: Number(formData.duration),
+      totalSeats: Number(formData.totalSeats),
+      enrolledCount: Number(formData.enrolledCount),
       status: formData.status || 'Active'
     };
 
@@ -85,7 +105,19 @@ export default function ManageCourses() {
     },
     {
       header: 'Duration',
-      render: (row) => <span className="font-mono text-ink">{row.duration || row.durationYears || 4} Years</span>
+      render: (row) => (
+        <span className="font-mono text-ink">
+          {row.duration ? `${row.duration} Years` : '—'}
+        </span>
+      )
+    },
+    {
+      header: 'Seats (Enrolled / Total)',
+      render: (row) => (
+        <span className="font-mono text-xs text-ink-muted">
+          {row.enrolledCount ?? 0} / {row.totalSeats ?? 0}
+        </span>
+      )
     },
     {
       header: 'Status',
@@ -201,7 +233,7 @@ export default function ManageCourses() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-mono text-ink-muted mb-1">DEPARTMENT</label>
                   <select
@@ -222,10 +254,49 @@ export default function ManageCourses() {
                     type="number"
                     min="1"
                     max="6"
-                    value={formData.durationYears}
-                    onChange={e => setFormData({ ...formData, durationYears: Number(e.target.value) })}
+                    value={formData.duration}
+                    onChange={e => setFormData({ ...formData, duration: Number(e.target.value) })}
                     className="w-full px-3 py-2 bg-surface-warm border border-border rounded-xl text-xs text-ink focus:border-cobalt focus:outline-none font-mono"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono text-ink-muted mb-1">TOTAL SEATS</label>
+                  <input
+                    type="number"
+                    min="10"
+                    max="500"
+                    value={formData.totalSeats}
+                    onChange={e => setFormData({ ...formData, totalSeats: Number(e.target.value) })}
+                    className="w-full px-3 py-2 bg-surface-warm border border-border rounded-xl text-xs text-ink focus:border-cobalt focus:outline-none font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-mono text-ink-muted mb-1">ENROLLED COUNT</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="500"
+                    value={formData.enrolledCount}
+                    onChange={e => setFormData({ ...formData, enrolledCount: Number(e.target.value) })}
+                    className="w-full px-3 py-2 bg-surface-warm border border-border rounded-xl text-xs text-ink focus:border-cobalt focus:outline-none font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono text-ink-muted mb-1">STATUS</label>
+                  <select
+                    value={formData.status}
+                    onChange={e => setFormData({ ...formData, status: e.target.value })}
+                    className="w-full px-3 py-2 bg-surface-warm border border-border rounded-xl text-xs text-ink focus:border-cobalt focus:outline-none font-mono"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Draft">Draft</option>
+                    <option value="Archived">Archived</option>
+                  </select>
                 </div>
               </div>
 

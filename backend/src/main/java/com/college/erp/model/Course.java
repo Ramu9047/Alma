@@ -13,6 +13,7 @@ public class Course {
     private int duration;       // years
     private int totalSeats;
     private int enrolledCount;
+    private String status = "Active";
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -28,4 +29,6 @@ public class Course {
     public void setTotalSeats(int totalSeats) { this.totalSeats = totalSeats; }
     public int getEnrolledCount() { return enrolledCount; }
     public void setEnrolledCount(int enrolledCount) { this.enrolledCount = enrolledCount; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

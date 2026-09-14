@@ -51,6 +51,9 @@ public class CourseController {
             existing.setDuration(body.getDuration());
             existing.setTotalSeats(body.getTotalSeats());
             existing.setEnrolledCount(body.getEnrolledCount());
+            if (body.getStatus() != null) {
+                existing.setStatus(body.getStatus());
+            }
             Course saved = courseRepo.save(existing);
             auditService.log(auth != null ? auth.getName() : "system",
                 extractRole(auth), "COURSE_UPDATED", "courses", saved.getId(), before, saved);
@@ -77,6 +80,7 @@ public class CourseController {
         copy.setDuration(c.getDuration());
         copy.setTotalSeats(c.getTotalSeats());
         copy.setEnrolledCount(c.getEnrolledCount());
+        copy.setStatus(c.getStatus());
         return copy;
     }
 
