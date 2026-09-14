@@ -1,53 +1,38 @@
 # 🎓 Alma — The Academic Command Center
 
-<div align="center">
-
-![Alma Banner](https://img.shields.io/badge/Alma-Academic%20Command%20Center-4F46E5?style=for-the-badge&logo=graduation-cap&logoColor=white)
-![React](https://img.shields.io/badge/React%2019-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot%203-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-![MongoDB Atlas](https://img.shields.io/badge/MongoDB%20Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
-![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)
-
 > *"The modern academic ERP designed for real-time institutional intelligence, predictive risk monitoring, and seamless role-based access."*
 
-[🌐 Live Web Application](https://alma.vercel.app) • [⚙️ Backend API Health](https://alma-backend-dtpq.onrender.com/api/auth/health) • [📖 Documentation](#-deployment--cloud-architecture)
-
-</div>
+[🌐 Live Web Application](https://alma.vercel.app) • [⚙️ Backend API Health](https://alma-backend-dtpq.onrender.com/api/auth/health) • [📖 Deployment Guide](#-production-deployment)
 
 ---
 
 ## 📸 Interface Showcase
 
-<div align="center">
-
 ### 🛡️ 1. Predictive Risk Radar Engine
 *Real-time student evaluation monitoring attendance dropout risks, fee arrears, and automated escalation.*
 
-<img src="docs/assets/risk_radar.png" alt="Alma Risk Radar Engine" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);" />
+![Alma Risk Radar Engine](docs/assets/risk_radar.png)
 
-<br/><br/>
+---
 
 ### 🔔 2. Glassmorphic UI Toast Alert System
 *Non-blocking, animated alert stack with role-aware dispatch badges, auto-dismiss countdown timer bars, and zero raw browser popups.*
 
-<img src="docs/assets/toast_alert.png" alt="Alma Glassmorphic Toast Alerts" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);" />
+![Alma Glassmorphic Toast Alerts](docs/assets/toast_alert.png)
 
-<br/><br/>
+---
 
 ### 📊 3. Executive Institutional Analytics
 *Comprehensive Recharts data visualizations showing attendance trends, pass rate metrics, fee recovery totals, and exportable executive reports.*
 
-<img src="docs/assets/analytics_dashboard.png" alt="Alma Executive Analytics Dashboard" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);" />
+![Alma Executive Analytics Dashboard](docs/assets/analytics_dashboard.png)
 
-<br/><br/>
+---
 
 ### 📋 4. Attendance Register & Course Management
 *Daily roll call register with real-time turnout calculations and automated low-attendance threshold warnings.*
 
-<img src="docs/assets/attendance_module.png" alt="Alma Attendance Module" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);" />
-
-</div>
+![Alma Attendance Module](docs/assets/attendance_module.png)
 
 ---
 
