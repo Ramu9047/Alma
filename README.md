@@ -17,6 +17,40 @@
 
 ---
 
+## 📸 Interface Showcase
+
+<div align="center">
+
+### 🛡️ 1. Predictive Risk Radar Engine
+*Real-time student evaluation monitoring attendance dropout risks, fee arrears, and automated escalation.*
+
+<img src="docs/assets/risk_radar.png" alt="Alma Risk Radar Engine" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);" />
+
+<br/><br/>
+
+### 🔔 2. Glassmorphic UI Toast Alert System
+*Non-blocking, animated alert stack with role-aware dispatch badges, auto-dismiss countdown timer bars, and zero raw browser popups.*
+
+<img src="docs/assets/toast_alert.png" alt="Alma Glassmorphic Toast Alerts" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);" />
+
+<br/><br/>
+
+### 📊 3. Executive Institutional Analytics
+*Comprehensive Recharts data visualizations showing attendance trends, pass rate metrics, fee recovery totals, and exportable executive reports.*
+
+<img src="docs/assets/analytics_dashboard.png" alt="Alma Executive Analytics Dashboard" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);" />
+
+<br/><br/>
+
+### 📋 4. Attendance Register & Course Management
+*Daily roll call register with real-time turnout calculations and automated low-attendance threshold warnings.*
+
+<img src="docs/assets/attendance_module.png" alt="Alma Attendance Module" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);" />
+
+</div>
+
+---
+
 ## ✨ Key System Features
 
 | Module | Features & Capabilities |
