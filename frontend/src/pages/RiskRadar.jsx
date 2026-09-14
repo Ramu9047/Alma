@@ -4,6 +4,7 @@ import StatusPill from '../components/common/StatusPill';
 import { ShieldAlert, AlertTriangle, UserCheck, Bell, WifiOff } from 'lucide-react';
 import { usePulse } from '../context/PulseContext';
 import { useAuth, ROLES } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import GrowthArc from '../components/common/GrowthArc';
 import { apiService } from '../services/api';
 
@@ -14,6 +15,7 @@ const DEFAULT_RISK_STUDENTS = [
 
 export default function RiskRadar() {
   const { pushPulseAlert } = usePulse();
+  const { toast } = useToast();
   const { user } = useAuth();
   const role = user?.role;
   const isRestricted = (role === ROLES.STUDENT || role === ROLES.PARENT);
@@ -47,7 +49,11 @@ export default function RiskRadar() {
 
   const handleDispatchAlert = (student) => {
     pushPulseAlert(`Academic Warning & HoD Alert Dispatched for ${student.name} (${student.rollNumber})`);
-    alert(`Alert sent to ${student.name}'s HoD and Parent Guardian email.`);
+    toast.dispatch(
+      `Official academic warning & escalation notice dispatched to ${student.name}'s HoD and Parent Guardian email.`,
+      `${student.name} (${student.rollNumber})`,
+      'Academic Risk Alert Dispatched'
+    );
   };
 
   const columns = [

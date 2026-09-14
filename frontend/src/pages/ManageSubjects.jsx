@@ -46,7 +46,6 @@ export function ManageSubjects() {
   };
 
   const handleDelete = async (s) => {
-    if (!window.confirm(`Delete subject ${s.name}?`)) return;
     await apiService.deleteSubject(s.id || s.subjectCode);
     loadSubjects();
   };

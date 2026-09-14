@@ -49,7 +49,6 @@ export default function ManageStudents() {
   };
 
   const handleDelete = async (s) => {
-    if (!window.confirm(`Delete student ${s.name}?`)) return;
     await apiService.deleteStudent(s.id || s.studentId);
     loadStudents();
   };

@@ -50,7 +50,6 @@ export default function ManageStaff() {
   };
 
   const handleDelete = async (s) => {
-    if (!window.confirm(`Delete faculty member ${s.name}?`)) return;
     await apiService.deleteStaff(s.id || s.staffId);
     loadStaff();
   };

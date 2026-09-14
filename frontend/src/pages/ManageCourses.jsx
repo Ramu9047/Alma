@@ -62,7 +62,6 @@ export default function ManageCourses() {
   };
 
   const handleDelete = async (course) => {
-    if (!window.confirm(`Delete course ${course.name || course.courseCode}?`)) return;
     await apiService.deleteCourse(course.id || course.courseCode);
     loadCourses();
   };

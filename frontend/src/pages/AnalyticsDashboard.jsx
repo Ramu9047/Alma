@@ -3,6 +3,7 @@ import { TrendingUp, Download, PieChart as PieIcon, Lock, WifiOff, Activity, Spa
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from 'recharts';
 import GrowthArc from '../components/common/GrowthArc';
 import { useAuth, ROLES } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { apiService } from '../services/api';
 
 const DEFAULT_ADMIN_KPIS = [
@@ -14,6 +15,7 @@ const DEFAULT_ADMIN_KPIS = [
 
 export default function AnalyticsDashboard() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const role = user?.role;
   const isRestricted = (role === ROLES.STUDENT || role === ROLES.PARENT);
 
@@ -92,7 +94,7 @@ export default function AnalyticsDashboard() {
           <div className="flex items-center gap-3">
             {!isRestricted ? (
               <button
-                onClick={() => alert('Exporting PDF report...')}
+                onClick={() => toast.info('Generating & compiling executive PDF report for download...', 'Institutional Report Generator')}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-warm border border-border text-ink text-xs font-mono hover:text-cobalt hover:border-cobalt/40 transition-all font-semibold shadow-sm"
               >
                 <Download className="w-4 h-4" /> Export PDF Report
