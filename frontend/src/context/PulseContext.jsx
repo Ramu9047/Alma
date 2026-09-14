@@ -18,7 +18,7 @@ export function PulseProvider({ children }) {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    const apiBase = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:8080';
     const client = new Client({
       webSocketFactory: () => new SockJS(`${apiBase}/ws-pulse`),
       reconnectDelay: 5000,

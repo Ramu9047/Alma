@@ -56,7 +56,7 @@ export function AuthProvider({ children }) {
     // ── Real backend authentication ────────────────────────────────
     // Calls POST /api/auth/login — backend issues a real HMAC-SHA256 signed JWT.
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:8080';
       const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
