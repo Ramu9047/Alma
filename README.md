@@ -26,17 +26,31 @@
 
 ---
 
-### 📊 3. Executive Institutional Analytics
+### 🤖 3. Nexus AI Copilot Overlay (`Ctrl+K`)
+*Natural-language command dispatcher powered by Groq LLM integration with plain-language analysis and technical trace logs.*
+
+![Alma AI Copilot Interface](docs/assets/copilot_interface.png)
+
+---
+
+### 📊 4. Executive Institutional Analytics
 *Comprehensive Recharts data visualizations showing attendance trends, pass rate metrics, fee recovery totals, and exportable executive reports.*
 
 ![Alma Executive Analytics Dashboard](docs/assets/analytics_dashboard.png)
 
 ---
 
-### 📋 4. Attendance Register & Course Management
+### 📋 5. Attendance Register & Course Management
 *Daily roll call register with real-time turnout calculations and automated low-attendance threshold warnings.*
 
 ![Alma Attendance Module](docs/assets/attendance_module.png)
+
+---
+
+### 🔑 6. Authentication & Preset Portal
+*Daylight-first authentication portal supporting 5 role presets and password visibility controls.*
+
+![Alma Login Portal](docs/assets/login_page.png)
 
 ---
 
