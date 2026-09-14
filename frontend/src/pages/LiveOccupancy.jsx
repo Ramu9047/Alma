@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Building2, Clock } from 'lucide-react';
 import GrowthArc from '../components/common/GrowthArc';
+import StatusPill from '../components/common/StatusPill';
 
 export default function LiveOccupancy() {
   const [rooms] = useState([
@@ -31,13 +32,7 @@ export default function LiveOccupancy() {
                 <h3 className="font-serif font-bold text-ink text-base">{room.name}</h3>
                 <span className="text-[10px] font-mono text-ink-muted">{room.building}</span>
               </div>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${
-                room.status === 'In Session' ? 'bg-cobalt/10 text-cobalt border-cobalt/30' :
-                room.status === 'Open Study' ? 'bg-success/10 text-success border-success/30' :
-                'bg-surface-warm text-ink-muted border-border'
-              }`}>
-                {room.status}
-              </span>
+              <StatusPill category="occupancy" status={room.status} size="xs" />
             </div>
 
             <div className="space-y-1">

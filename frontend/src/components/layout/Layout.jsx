@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import CommandRail from './CommandRail';
 import CampusPulseBar from './CampusPulseBar';
-import ThemeToggle from './ThemeToggle';
 import NexusOrbCopilot from '../copilot/NexusOrbCopilot';
 import { useAuth, ROLES } from '../../context/AuthContext';
 import { UserCheck, LogOut, ChevronDown, ShieldAlert } from 'lucide-react';
@@ -41,7 +40,6 @@ export default function Layout() {
 
             {/* Topbar Controls */}
             <div className="flex items-center gap-4">
-              <ThemeToggle />
 
               {/* Demo View Role Switcher Dropdown (Visually demoted secondary control with DEMO tag) */}
               <div className="relative">

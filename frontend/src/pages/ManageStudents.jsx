@@ -68,10 +68,12 @@ export default function ManageStudents() {
   const columns = [
     {
       header: 'Roll Number',
+      accessor: 'studentId',
       render: (row) => <span className="font-mono text-cobalt font-semibold">{row.studentId || row.rollNumber}</span>
     },
     {
       header: 'Student Name',
+      accessor: 'name',
       render: (row) => (
         <div className="flex flex-col">
           <span className="font-medium text-ink">{row.name}</span>
@@ -81,10 +83,12 @@ export default function ManageStudents() {
     },
     {
       header: 'Course / Session',
+      accessor: 'course',
       render: (row) => <span className="font-mono text-xs">{row.course} ({row.batch || row.session})</span>
     },
     {
       header: 'Attendance %',
+      accessor: 'attendancePercent',
       render: (row) => {
         const att = row.attendancePercent ?? row.attendancePct ?? 0;
         return (
@@ -104,6 +108,7 @@ export default function ManageStudents() {
     },
     {
       header: 'Fee Status',
+      accessor: 'feeStatus',
       render: (row) => <StatusPill category="fee" status={row.feeStatus || 'Paid'} />
     }
   ];
@@ -125,6 +130,7 @@ export default function ManageStudents() {
         subtitle={loading ? "Loading live records..." : "Manage student profiles, academic progress, and status"}
         columns={columns}
         data={students}
+        isLoading={loading}
         onEdit={handleOpenEdit}
         onDelete={handleDelete}
         actions={

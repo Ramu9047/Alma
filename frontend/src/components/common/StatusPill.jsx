@@ -110,6 +110,38 @@ export default function StatusPill({ status, category = 'general', size = 'sm' }
       }
       break;
 
+    case 'risk':
+      if (normalized.includes('high') || normalized.includes('critical')) {
+        icon = <AlertOctagon className="w-3 h-3 text-risk" />;
+        bgClass = 'bg-risk/15 text-risk border-risk/40 font-bold';
+        borderStyle = 'border-l-4 border-l-risk';
+      } else if (normalized.includes('med') || normalized.includes('moderate')) {
+        icon = <AlertTriangle className="w-3 h-3 text-warning" />;
+        bgClass = 'bg-warning/15 text-warning border-warning/40 font-semibold';
+        borderStyle = 'border-l-4 border-l-warning';
+      } else {
+        icon = <CheckCircle2 className="w-3 h-3 text-success" />;
+        bgClass = 'bg-success/15 text-success border-success/40';
+        borderStyle = 'border-l-4 border-l-success';
+      }
+      break;
+
+    case 'occupancy':
+      if (normalized.includes('session') || normalized.includes('occupied') || normalized.includes('busy')) {
+        icon = <BookOpen className="w-3 h-3 text-cobalt" />;
+        bgClass = 'bg-cobalt/10 text-cobalt border-cobalt/30 font-semibold';
+        borderStyle = 'border-l-4 border-l-cobalt';
+      } else if (normalized.includes('vacant') || normalized.includes('open') || normalized.includes('available')) {
+        icon = <CheckCircle2 className="w-3 h-3 text-success" />;
+        bgClass = 'bg-success/10 text-success border-success/30';
+        borderStyle = 'border-l-4 border-l-success';
+      } else {
+        icon = <XCircle className="w-3 h-3 text-risk" />;
+        bgClass = 'bg-risk/10 text-risk border-risk/30';
+        borderStyle = 'border-l-4 border-l-risk';
+      }
+      break;
+
     default:
       if (normalized.includes('active') || normalized.includes('approved') || normalized.includes('paid') || normalized.includes('pass') || normalized.includes('operational') || normalized.includes('resolved')) {
         icon = <CheckCircle2 className="w-3 h-3 text-success" />;

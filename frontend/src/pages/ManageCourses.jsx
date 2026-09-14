@@ -8,6 +8,7 @@ import { Plus, BookOpen, Layers, CheckCircle, WifiOff } from 'lucide-react';
 export default function ManageCourses() {
   const [courses, setCourses] = useState(mockCourses);
   const [isOffline, setIsOffline] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
   const [formData, setFormData] = useState({
@@ -21,9 +22,11 @@ export default function ManageCourses() {
   });
 
   const loadCourses = async () => {
+    setLoading(true);
     const res = await apiService.getCourses();
     if (res.data && res.data.length > 0) setCourses(res.data);
     setIsOffline(res.offline);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -88,6 +91,7 @@ export default function ManageCourses() {
   const columns = [
     {
       header: 'Course Code',
+      accessor: 'courseCode',
       render: (row) => (
         <span className="font-mono font-semibold text-cobalt bg-cobalt/10 px-2 py-0.5 rounded-md border border-cobalt/20">
           {row.courseCode || row.code}
@@ -96,6 +100,7 @@ export default function ManageCourses() {
     },
     {
       header: 'Course Name',
+      accessor: 'name',
       render: (row) => (
         <div className="flex flex-col">
           <span className="font-medium text-ink">{row.name}</span>
@@ -105,6 +110,7 @@ export default function ManageCourses() {
     },
     {
       header: 'Duration',
+      accessor: 'duration',
       render: (row) => (
         <span className="font-mono text-ink">
           {row.duration ? `${row.duration} Years` : '—'}
@@ -113,6 +119,7 @@ export default function ManageCourses() {
     },
     {
       header: 'Seats (Enrolled / Total)',
+      accessor: 'enrolledCount',
       render: (row) => (
         <span className="font-mono text-xs text-ink-muted">
           {row.enrolledCount ?? 0} / {row.totalSeats ?? 0}
@@ -121,6 +128,7 @@ export default function ManageCourses() {
     },
     {
       header: 'Status',
+      accessor: 'status',
       render: (row) => <StatusPill category="course" status={row.status || 'Active'} />
     }
   ];
@@ -191,6 +199,7 @@ export default function ManageCourses() {
         subtitle="Full course catalog management for HoD & Admin staff"
         columns={columns}
         data={courses}
+        isLoading={loading}
         onEdit={handleOpenEdit}
         onDelete={handleDelete}
         searchPlaceholder="Filter courses by code, name..."

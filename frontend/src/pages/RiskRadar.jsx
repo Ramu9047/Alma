@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '../components/common/DataTable';
+import StatusPill from '../components/common/StatusPill';
 import { ShieldAlert, AlertTriangle, UserCheck, Bell, WifiOff } from 'lucide-react';
 import { usePulse } from '../context/PulseContext';
 import { useAuth, ROLES } from '../context/AuthContext';
@@ -50,34 +51,37 @@ export default function RiskRadar() {
   };
 
   const columns = [
-    { header: 'Roll Number', render: (r) => <span className="font-mono text-cobalt font-semibold">{r.rollNumber}</span> },
-    { header: 'Student Name', render: (r) => <span className="font-medium text-ink">{r.name}</span> },
+    { header: 'Roll Number', accessor: 'rollNumber', render: (r) => <span className="font-mono text-cobalt font-semibold">{r.rollNumber}</span> },
+    { header: 'Student Name', accessor: 'name', render: (r) => <span className="font-medium text-ink">{r.name}</span> },
     {
       header: 'Attendance %',
+      accessor: 'attendance',
       render: (r) => <span className={`font-mono font-bold ${r.attendance < 75 ? 'text-risk' : 'text-success'}`}>{r.attendance}%</span>
     },
     {
       header: 'Overdue Days',
+      accessor: 'feeOverdueDays',
       render: (r) => <span className={`font-mono ${r.feeOverdueDays > 30 ? 'text-risk font-bold' : 'text-ink-muted'}`}>{r.feeOverdueDays} days</span>
     },
     {
       header: 'Dropout Risk',
+      accessor: 'dropoutRiskScore',
       render: (r) => (
-        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold border ${
-          r.dropoutRiskScore >= 75 ? 'bg-risk/10 text-risk border-risk/30' :
-          r.dropoutRiskScore >= 50 ? 'bg-warning/10 text-warning border-warning/30' :
-          'bg-success/10 text-success border-success/30'
-        }`}>
-          {r.dropoutRiskScore} / 100
-        </span>
+        <StatusPill
+          category="risk"
+          status={`${r.dropoutRiskScore >= 75 ? 'HIGH RISK' : r.dropoutRiskScore >= 50 ? 'MEDIUM RISK' : 'LOW RISK'} (${r.dropoutRiskScore}/100)`}
+          size="xs"
+        />
       )
     },
     {
       header: 'Recommended Action',
+      accessor: 'recommendedAction',
       render: (r) => <span className="text-xs text-ink-muted italic">{r.recommendedAction}</span>
     },
     ...(!isRestricted ? [{
       header: 'Action',
+      sortable: false,
       render: (r) => (
         <button
           onClick={() => handleDispatchAlert(r)}

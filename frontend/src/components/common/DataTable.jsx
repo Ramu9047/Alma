@@ -1,25 +1,77 @@
-import React, { useState } from 'react';
-import { Edit2, Trash2, Search } from 'lucide-react';
-import ConfirmModal from './ConfirmModal';
+import React, { useState } from "react";
+import { Edit2, Trash2, Search, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, Inbox } from "lucide-react";
+import ConfirmModal from "./ConfirmModal";
 
 export default function DataTable({
   columns,
-  data,
+  data = [],
   onEdit,
   onDelete,
   searchPlaceholder = "Filter records...",
   title,
   subtitle,
-  actions
+  actions,
+  isLoading = false,
+  pageSize: initialPageSize = 10
 }) {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [deleteItem, setDeleteItem] = useState(null);
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(initialPageSize);
 
+  // 1. Filter
   const filteredData = data.filter(item =>
     Object.values(item).some(val =>
-      String(val).toLowerCase().includes(searchTerm.toLowerCase())
+      String(val ?? "").toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
+
+  // 2. Sort
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (!sortColumn) return 0;
+    const aVal = a[sortColumn];
+    const bVal = b[sortColumn];
+
+    if (aVal === undefined || aVal === null) return 1;
+    if (bVal === undefined || bVal === null) return -1;
+
+    if (typeof aVal === "number" && typeof bVal === "number") {
+      return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
+    }
+
+    const aStr = String(aVal).toLowerCase();
+    const bStr = String(bVal).toLowerCase();
+    if (aStr < bStr) return sortDirection === "asc" ? -1 : 1;
+    if (aStr > bStr) return sortDirection === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  // 3. Paginate
+  const totalPages = Math.max(1, Math.ceil(sortedData.length / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * pageSize;
+  const paginatedData = sortedData.slice(startIndex, startIndex + pageSize);
+
+  const handleHeaderClick = (col) => {
+    if (col.sortable === false) return;
+    const key = col.sortKey || col.accessor;
+    if (!key) return;
+
+    if (sortColumn === key) {
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else {
+        setSortColumn(null);
+        setSortDirection("asc");
+      }
+    } else {
+      setSortColumn(key);
+      setSortDirection("asc");
+    }
+    setCurrentPage(1);
+  };
 
   const handleDeleteConfirm = () => {
     if (deleteItem && onDelete) {
@@ -44,7 +96,10 @@ export default function DataTable({
             <input
               type="text"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
               placeholder={searchPlaceholder}
               className="pl-9 pr-4 py-2 bg-surface-warm border border-border rounded-xl text-xs text-ink placeholder-ink-muted focus:outline-none focus:border-cobalt w-64 transition-all"
             />
@@ -59,25 +114,73 @@ export default function DataTable({
         <table className="w-full text-left border-collapse">
           <thead className="sticky top-0 bg-surface-warm border-b border-border text-xs font-mono uppercase tracking-wider text-ink-muted z-10">
             <tr>
-              {columns.map((col, idx) => (
-                <th key={idx} className="px-4 py-3.5 font-semibold">
-                  {col.header}
-                </th>
-              ))}
+              {columns.map((col, idx) => {
+                const key = col.sortKey || col.accessor;
+                const canSort = col.sortable !== false && Boolean(key);
+                const isSorted = sortColumn === key;
+
+                return (
+                  <th
+                    key={idx}
+                    onClick={() => canSort && handleHeaderClick(col)}
+                    className={`px-4 py-3.5 font-semibold select-none ${canSort ? "cursor-pointer hover:text-cobalt transition-colors" : ""}`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>{col.header}</span>
+                      {canSort && (
+                        isSorted ? (
+                          sortDirection === "asc" ? (
+                            <ArrowUp className="w-3.5 h-3.5 text-cobalt" />
+                          ) : (
+                            <ArrowDown className="w-3.5 h-3.5 text-cobalt" />
+                          )
+                        ) : (
+                          <ArrowUpDown className="w-3.5 h-3.5 opacity-30 group-hover:opacity-100" />
+                        )
+                      )}
+                    </div>
+                  </th>
+                );
+              })}
               {(onEdit || onDelete) && (
                 <th className="px-4 py-3.5 text-right font-semibold">Actions</th>
               )}
             </tr>
           </thead>
           <tbody className="divide-y divide-border/60 text-xs font-sans text-ink">
-            {filteredData.length === 0 ? (
+            {isLoading ? (
+              // Loading Skeleton State
+              Array.from({ length: 5 }).map((_, rowIdx) => (
+                <tr key={`skeleton-${rowIdx}`} className="animate-pulse">
+                  {columns.map((_, colIdx) => (
+                    <td key={colIdx} className="px-4 py-4">
+                      <div className="h-3.5 bg-surface-warm rounded-md w-3/4" />
+                    </td>
+                  ))}
+                  {(onEdit || onDelete) && (
+                    <td className="px-4 py-4 text-right">
+                      <div className="h-3.5 bg-surface-warm rounded-md w-12 ml-auto" />
+                    </td>
+                  )}
+                </tr>
+              ))
+            ) : paginatedData.length === 0 ? (
+              // Empty State
               <tr>
-                <td colSpan={columns.length + 1} className="px-4 py-8 text-center text-ink-muted font-mono">
-                  No records matching search query.
+                <td colSpan={columns.length + (onEdit || onDelete ? 1 : 0)} className="px-4 py-12 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-surface-warm border border-border flex items-center justify-center text-ink-muted">
+                      <Inbox className="w-5 h-5" />
+                    </div>
+                    <span className="font-serif font-bold text-sm text-ink">No records found</span>
+                    <span className="text-xs text-ink-muted font-mono max-w-sm">
+                      {searchTerm ? `No matching records found for "${searchTerm}". Try adjusting your search query.` : "There are currently no records available in this collection."}
+                    </span>
+                  </div>
                 </td>
               </tr>
             ) : (
-              filteredData.map((row, rowIndex) => (
+              paginatedData.map((row, rowIndex) => (
                 <tr
                   key={row.id || rowIndex}
                   className="command-table-row group animate-stagger-fade"
@@ -120,9 +223,48 @@ export default function DataTable({
       </div>
 
       {/* Table Pagination Footer */}
-      <div className="p-3 border-t border-border bg-surface-warm/50 text-xs font-mono text-ink-muted flex items-center justify-between">
-        <span>Showing {filteredData.length} records</span>
-        <span className="text-[10px] uppercase text-cobalt font-semibold">Alma Academic Data Grid</span>
+      <div className="p-3.5 border-t border-border bg-surface-warm/50 text-xs font-mono text-ink-muted flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span>Showing {sortedData.length > 0 ? startIndex + 1 : 0}–{Math.min(startIndex + pageSize, sortedData.length)} of {sortedData.length} records</span>
+          {sortedData.length > 0 && (
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="px-2 py-0.5 bg-surface border border-border rounded text-[10px] text-ink focus:outline-none font-mono"
+            >
+              <option value={5}>5 / page</option>
+              <option value={10}>10 / page</option>
+              <option value={20}>20 / page</option>
+              <option value={50}>50 / page</option>
+            </select>
+          )}
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            disabled={safeCurrentPage <= 1 || isLoading}
+            className="p-1 rounded-lg border border-border bg-surface hover:bg-surface-warm text-ink disabled:opacity-40 disabled:hover:bg-surface transition-all"
+            title="Previous Page"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <span className="text-[11px] font-semibold text-ink px-1">
+            Page {safeCurrentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+            disabled={safeCurrentPage >= totalPages || isLoading}
+            className="p-1 rounded-lg border border-border bg-surface hover:bg-surface-warm text-ink disabled:opacity-40 disabled:hover:bg-surface transition-all"
+            title="Next Page"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Delete Confirmation Modal */}
@@ -138,3 +280,4 @@ export default function DataTable({
     </div>
   );
 }
+
