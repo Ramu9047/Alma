@@ -17,32 +17,34 @@
 
 ---
 
-## 📸 Interface Showcase
+## 📸 Interface & System Showcase
 
 <div align="center">
 
-### 🛡️ Predictive Risk Radar & Student Intelligence
-*Real-time AI-assisted student evaluation monitoring attendance dropout risks, fee arrears, and automated escalation.*
+### 🛡️ Predictive Risk Radar & Real-Time Intelligence
+*Real-time student evaluation monitoring attendance dropout risks, fee arrears, and automated escalation.*
 
-```
-+---------------------------------------------------------------------------------------+
-|  ALMA COMMAND / Risk Radar                                                            |
-|  [● LIVE CAMPUS PULSE] 142 students present today (92% turnout)                       |
-+---------------------------------------------------------------------------------------+
-| ROLL NUMBER | STUDENT NAME | ATTENDANCE % | OVERDUE DAYS | DROPOUT RISK | ACTION      |
-| CS2024-042  | Alex Rivera  | 88%          | 0 days       | LOW RISK     | [Dispatch]  |
-| ME2024-003  | Vikram Singh | 62% (RISK)   | 36 days      | HIGH RISK    | [Dispatch]  |
-+---------------------------------------------------------------------------------------+
-```
+<img src="docs/assets/risk_radar.png" alt="Alma Risk Radar Engine" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);" />
 
-### 🔔 Custom Glassmorphic Toast & Notification System
-*Non-blocking, animated alert stack with role-aware dispatch badges, auto-dismiss timers, and zero raw browser popups.*
+<br/><br/>
+
+### ⚙️ Glassmorphic Confirmation Modal & Deletion Guards
+*Alma custom non-blocking UI components replacing legacy browser dialogs with single-action verification.*
+
+<img src="docs/assets/confirm_modal.png" alt="Alma Glassmorphic Modal" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);" />
+
+<br/><br/>
+
+### 🚀 Live Cloud Deployment on Render & MongoDB Atlas
+*Spring Boot Docker backend running on Render connected to MongoDB Atlas M0 Cloud Cluster.*
+
+<img src="docs/assets/render_deployment.png" alt="Render Production Backend Logs" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);" />
 
 </div>
 
 ---
 
-## ✨ System Features
+## ✨ Key System Features
 
 | Module | Features & Capabilities |
 | :--- | :--- |
@@ -57,7 +59,7 @@
 
 ---
 
-## 🏗️ Architecture & Deployment
+## 🏗️ Architecture & Cloud Infrastructure
 
 ```mermaid
 flowchart TD
