@@ -123,7 +123,8 @@ export const apiService = {
   getTimetable: () => apiFetch('/api/admin/timetable', {}, mockTimetable),
   getAuditLogs: () => apiFetch('/api/admin/notifications', {}, mockAuditLogs),
   getAnalytics: () => apiFetch('/api/admin/analytics', {}, null),
-  getResults: () => apiFetch('/api/student/results', {}, null),
+  getResults: (subjectCode) => apiFetch(subjectCode ? `/api/results?subjectCode=${subjectCode}` : '/api/results', {}, null),
+  submitResults: (subjectCode, records) => apiFetch('/api/results/bulk', { method: 'POST', body: JSON.stringify({ subjectCode, records }) }),
   getRisk: () => apiFetch('/api/admin/risk', {}, null),
 
   // Mutations

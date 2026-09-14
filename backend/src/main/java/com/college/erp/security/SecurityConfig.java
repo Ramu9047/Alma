@@ -101,6 +101,11 @@ public class SecurityConfig {
                 // Student resources
                 .requestMatchers("/api/student/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STUDENT")
 
+                // Results / Marks — updates (POST/PUT) restricted to Staff/Admin/HoD; GET open to authenticated users
+                .requestMatchers(HttpMethod.POST, "/api/results/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF")
+                .requestMatchers(HttpMethod.PUT, "/api/results/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF")
+                .requestMatchers("/api/results/**").authenticated()
+
                 // Parent resources
                 .requestMatchers("/api/parent/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "PARENT")
 

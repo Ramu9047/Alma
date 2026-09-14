@@ -35,10 +35,17 @@ public class CourseController {
 
     @PostMapping
     public ResponseEntity<Course> create(@RequestBody Course course, Authentication auth) {
-        Course saved = courseRepo.save(course);
-        auditService.log(auth != null ? auth.getName() : "system",
-            extractRole(auth), "COURSE_CREATED", "courses", saved.getId(), null, saved);
-        return ResponseEntity.status(201).body(saved);
+        if (course.getCourseCode() != null && courseRepo.findByCourseCode(course.getCourseCode()).isPresent()) {
+            return ResponseEntity.status(409).build();
+        }
+        try {
+            Course saved = courseRepo.save(course);
+            auditService.log(auth != null ? auth.getName() : "system",
+                extractRole(auth), "COURSE_CREATED", "courses", saved.getId(), null, saved);
+            return ResponseEntity.status(201).body(saved);
+        } catch (org.springframework.dao.DuplicateKeyException e) {
+            return ResponseEntity.status(409).build();
+        }
     }
 
     @PutMapping("/{id}")

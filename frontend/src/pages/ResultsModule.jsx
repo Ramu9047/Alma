@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
-import { Download, WifiOff } from 'lucide-react';
+import { Download, WifiOff, Save, CheckCircle } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
 import GrowthArc from '../components/common/GrowthArc';
@@ -21,23 +21,61 @@ export default function ResultsModule() {
   const [selectedSubject, setSelectedSubject] = useState('CS301 (Data Structures)');
   const [marksData, setMarksData] = useState(DEFAULT_MARKS);
   const [isOffline, setIsOffline] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const canEdit = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN_HOD' || user?.role === 'STAFF';
+
+  const loadResults = async (subj) => {
+    const subjectCode = (subj || selectedSubject).split(' ')[0];
+    const res = await apiService.getResults(subjectCode);
+    if (res.data && res.data.length > 0) {
+      const mapped = res.data.map(r => ({
+        rollNumber: r.studentId || 'STD-000',
+        name: r.studentName || 'Student',
+        internal: r.internal ?? 0,
+        external: r.external ?? 0
+      }));
+      setMarksData(mapped);
+    } else {
+      const stdRes = await apiService.getStudents();
+      if (stdRes.data && stdRes.data.length > 0) {
+        setMarksData(stdRes.data.map(s => ({
+          rollNumber: s.studentId,
+          name: s.name,
+          internal: 20,
+          external: 60
+        })));
+      } else {
+        setMarksData(DEFAULT_MARKS);
+      }
+    }
+    setIsOffline(res.offline);
+  };
 
   useEffect(() => {
-    async function loadResults() {
-      const res = await apiService.getResults();
-      if (res.data && res.data.length > 0) {
-        const mapped = res.data.map(s => ({
-          rollNumber: s.studentId || 'STD-000',
-          name: s.studentName || s.name || 'Student',
-          internal: 22,
-          external: Math.round((s.gpa / 4.0) * 80)
-        }));
-        setMarksData(mapped);
-      }
-      setIsOffline(res.offline);
+    loadResults(selectedSubject);
+  }, [selectedSubject]);
+
+  const handleSaveMarks = async () => {
+    if (!canEdit) return;
+    setIsSaving(true);
+    const subjectCode = selectedSubject.split(' ')[0];
+    const records = marksData.map(m => ({
+      studentId: m.rollNumber,
+      studentName: m.name,
+      internal: Number(m.internal) || 0,
+      external: Number(m.external) || 0
+    }));
+
+    const res = await apiService.submitResults(subjectCode, records);
+    setIsSaving(false);
+    if (res.data) {
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+      loadResults(selectedSubject);
     }
-    loadResults();
-  }, []);
+  };
 
   const calculateGrade = (total) => {
     if (total >= 90) return { grade: 'O', status: 'Pass', gpa: 10.0 };
@@ -114,7 +152,7 @@ export default function ResultsModule() {
             <p className="text-xs text-ink-muted">Gradebook entries, internal evaluation calculation, and transcript dispatch</p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <span className="text-xs font-mono text-ink-muted">Course Evaluation:</span>
             <select
               value={selectedSubject}
@@ -126,6 +164,26 @@ export default function ResultsModule() {
               <option>EC201 (Analog Electronics)</option>
               <option>AI101 (Machine Learning)</option>
             </select>
+
+            {canEdit && (
+              <button
+                onClick={handleSaveMarks}
+                disabled={isSaving}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl btn-cobalt text-xs font-semibold disabled:opacity-50"
+              >
+                {saveSuccess ? (
+                  <>
+                    <CheckCircle className="w-3.5 h-3.5 text-success" />
+                    <span>Saved!</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-3.5 h-3.5" />
+                    <span>{isSaving ? 'Saving...' : 'Save Evaluation'}</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
 
@@ -156,19 +214,23 @@ export default function ResultsModule() {
                     <td className="p-3.5">
                       <input
                         type="number"
+                        min={0}
                         max={30}
+                        disabled={!canEdit}
                         value={row.internal}
                         onChange={(e) => handleMarkChange(row.rollNumber, 'internal', e.target.value)}
-                        className="w-16 px-2 py-1 bg-surface border border-border rounded-lg text-ink focus:border-cobalt focus:outline-none text-xs font-mono font-semibold"
+                        className="w-16 px-2 py-1 bg-surface border border-border rounded-lg text-ink focus:border-cobalt focus:outline-none text-xs font-mono font-semibold disabled:opacity-70"
                       />
                     </td>
                     <td className="p-3.5">
                       <input
                         type="number"
+                        min={0}
                         max={70}
+                        disabled={!canEdit}
                         value={row.external}
                         onChange={(e) => handleMarkChange(row.rollNumber, 'external', e.target.value)}
-                        className="w-16 px-2 py-1 bg-surface border border-border rounded-lg text-ink focus:border-cobalt focus:outline-none text-xs font-mono font-semibold"
+                        className="w-16 px-2 py-1 bg-surface border border-border rounded-lg text-ink focus:border-cobalt focus:outline-none text-xs font-mono font-semibold disabled:opacity-70"
                       />
                     </td>
                     <td className="p-3.5 font-bold text-ink">{total}</td>

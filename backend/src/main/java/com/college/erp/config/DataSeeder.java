@@ -21,11 +21,12 @@ public class DataSeeder implements CommandLineRunner {
     private final CourseRepository courseRepo;
     private final LeaveRepository leaveRepo;
     private final TimetableRepository timetableRepo;
+    private final ResultRepository resultRepo;
 
     public DataSeeder(StudentRepository studentRepo, StaffRepository staffRepo,
                       SubjectRepository subjectRepo, FeeRepository feeRepo,
                       CourseRepository courseRepo, LeaveRepository leaveRepo,
-                      TimetableRepository timetableRepo) {
+                      TimetableRepository timetableRepo, ResultRepository resultRepo) {
         this.studentRepo = studentRepo;
         this.staffRepo = staffRepo;
         this.subjectRepo = subjectRepo;
@@ -33,6 +34,7 @@ public class DataSeeder implements CommandLineRunner {
         this.courseRepo = courseRepo;
         this.leaveRepo = leaveRepo;
         this.timetableRepo = timetableRepo;
+        this.resultRepo = resultRepo;
     }
 
     @Override
@@ -44,6 +46,7 @@ public class DataSeeder implements CommandLineRunner {
         seedCourses();
         seedLeaves();
         seedTimetable();
+        seedResults();
     }
 
     private void seedStudents() {
@@ -199,5 +202,25 @@ public class DataSeeder implements CommandLineRunner {
         t.setDepartment(dept); t.setDay(day); t.setTimeSlot(slot);
         t.setSubjectCode(subj); t.setFacultyId(faculty); t.setRoom(room);
         return t;
+    }
+
+    private void seedResults() {
+        if (resultRepo.count() > 0) { log.info("Results already seeded — skipping"); return; }
+        resultRepo.saveAll(List.of(
+            result("CS2024-001", "Aarav Sharma", "CS301", 26, 62, "A+", "Pass"),
+            result("CS2024-042", "Alex Rivera",  "CS301", 24, 58, "A",  "Pass"),
+            result("EC2024-015", "Ananya Patel", "CS301", 18, 48, "C",  "Pass"),
+            result("ME2024-003", "Vikram Singh", "CS301", 12, 22, "F",  "Fail")
+        ));
+        log.info("Seeded initial result records for CS301");
+    }
+
+    private Result result(String stdId, String name, String subCode, int internal, int external, String grade, String status) {
+        Result r = new Result();
+        r.setStudentId(stdId); r.setStudentName(name); r.setSubjectCode(subCode);
+        r.setInternal(internal); r.setExternal(external); r.setTotal(internal + external);
+        r.setGrade(grade); r.setStatus(status); r.setSemester("Spring 2026");
+        r.setEnteredBy("system");
+        return r;
     }
 }

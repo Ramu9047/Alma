@@ -125,6 +125,10 @@ export default function ManageCourses() {
     }
   ];
 
+  const departmentCount = new Set(courses.map(c => c.department)).size;
+  const activeCoursesCount = courses.filter(c => !c.status || c.status === 'Active').length;
+  const activeRatePercent = courses.length > 0 ? Math.round((activeCoursesCount / courses.length) * 100) : 100;
+
   return (
     <div className="space-y-6">
       {isOffline && (
@@ -163,7 +167,7 @@ export default function ManageCourses() {
         <div className="command-card p-5 flex items-center justify-between">
           <div>
             <span className="text-xs font-mono text-ink-muted uppercase tracking-wider font-semibold">DEPARTMENTS</span>
-            <h3 className="text-2xl font-serif font-bold text-cobalt mt-1">4 Active</h3>
+            <h3 className="text-2xl font-serif font-bold text-cobalt mt-1">{departmentCount} Active</h3>
           </div>
           <div className="w-10 h-10 rounded-xl bg-cobalt/10 border border-cobalt/30 flex items-center justify-center text-cobalt">
             <Layers className="w-5 h-5" />
@@ -172,8 +176,8 @@ export default function ManageCourses() {
 
         <div className="command-card p-5 flex items-center justify-between">
           <div>
-            <span className="text-xs font-mono text-ink-muted uppercase tracking-wider font-semibold">ACADEMIC STATUS</span>
-            <h3 className="text-2xl font-serif font-bold text-success mt-1">100% Operational</h3>
+            <span className="text-xs font-mono text-ink-muted uppercase tracking-wider font-semibold">ACTIVE RATE</span>
+            <h3 className="text-2xl font-serif font-bold text-success mt-1">{activeRatePercent}% Active</h3>
           </div>
           <div className="w-10 h-10 rounded-xl bg-success/10 border border-success/30 flex items-center justify-center text-success">
             <CheckCircle className="w-5 h-5" />
