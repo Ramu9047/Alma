@@ -4,6 +4,10 @@
 
 [🌐 Live Web Application](https://alma.vercel.app) • [⚙️ Backend API Health](https://alma-backend-dtpq.onrender.com/api/auth/health) • [📖 Deployment Guide](#-production-deployment)
 
+## 🎬 Live Application Walkthrough
+
+![Alma Animated Platform Walkthrough](docs/assets/demo_walkthrough.gif)
+
 ---
 
 ## 📸 Interface Showcase
