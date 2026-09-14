@@ -9,6 +9,7 @@ import React from 'react';
  * - "divider": Horizontal section divider line with upward trajectory curve.
  * - "gauge": Circular/semicircular progress arc for Risk Radar risk scores or metrics.
  * - "loader": Animated looping trajectory arc for AI Copilot thinking state.
+ * - "banner": Compact corner trajectory curve for page header command-cards.
  * 
  * Variant Colors:
  * - "cobalt" (default academic blue)
@@ -138,6 +139,43 @@ export default function GrowthArc({
               transition: 'stroke-dashoffset 800ms ease-out, stroke 300ms ease',
             }}
           />
+        </svg>
+      </div>
+    );
+  }
+
+  // Mode 4: Header Banner Arc (Compact Corner Curve for Page Headers)
+  if (mode === "banner") {
+    return (
+      <div className={`w-full h-full flex items-center justify-center overflow-hidden select-none ${className}`}>
+        <svg
+          viewBox="0 0 180 50"
+          className="w-full h-full opacity-90 overflow-visible"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Background trajectory baseline */}
+          <path
+            d="M 5 42 Q 55 42 105 28 T 175 10"
+            stroke="currentColor"
+            strokeOpacity="0.15"
+            strokeWidth="2"
+            strokeDasharray="4 4"
+          />
+          {/* Animated Growth Arc Trajectory Line */}
+          <path
+            d="M 5 42 Q 55 42 105 28 T 175 10"
+            stroke={strokeColor}
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            className="animate-draw-arc"
+            style={{
+              strokeDasharray: '200',
+              strokeDashoffset: '0',
+            }}
+          />
+          {/* Trajectory Endpoint Dot */}
+          <circle cx="175" cy="10" r="4.5" fill={strokeColor} className="animate-pulse" />
         </svg>
       </div>
     );
