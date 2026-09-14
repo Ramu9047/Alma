@@ -17,33 +17,6 @@
 
 ---
 
-## 📸 Interface & System Showcase
-
-<div align="center">
-
-### 🛡️ Predictive Risk Radar & Real-Time Intelligence
-*Real-time student evaluation monitoring attendance dropout risks, fee arrears, and automated escalation.*
-
-<img src="docs/assets/risk_radar.png" alt="Alma Risk Radar Engine" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);" />
-
-<br/><br/>
-
-### ⚙️ Glassmorphic Confirmation Modal & Deletion Guards
-*Alma custom non-blocking UI components replacing legacy browser dialogs with single-action verification.*
-
-<img src="docs/assets/confirm_modal.png" alt="Alma Glassmorphic Modal" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);" />
-
-<br/><br/>
-
-### 🚀 Live Cloud Deployment on Render & MongoDB Atlas
-*Spring Boot Docker backend running on Render connected to MongoDB Atlas M0 Cloud Cluster.*
-
-<img src="docs/assets/render_deployment.png" alt="Render Production Backend Logs" width="900" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);" />
-
-</div>
-
----
-
 ## ✨ Key System Features
 
 | Module | Features & Capabilities |
