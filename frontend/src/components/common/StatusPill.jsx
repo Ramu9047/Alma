@@ -131,12 +131,16 @@ export default function StatusPill({ status, category = 'general', size = 'sm' }
         icon = <BookOpen className="w-3 h-3 text-cobalt" />;
         bgClass = 'bg-cobalt/10 text-cobalt border-cobalt/30 font-semibold';
         borderStyle = 'border-l-4 border-l-cobalt';
-      } else if (normalized.includes('vacant') || normalized.includes('open') || normalized.includes('available')) {
+      } else if (normalized.includes('vacant')) {
+        icon = <XCircle className="w-3 h-3 text-ink-muted" />;
+        bgClass = 'bg-surface-warm text-ink-muted border-border';
+        borderStyle = 'border-l-4 border-l-ink-muted';
+      } else if (normalized.includes('open') || normalized.includes('available')) {
         icon = <CheckCircle2 className="w-3 h-3 text-success" />;
         bgClass = 'bg-success/10 text-success border-success/30';
         borderStyle = 'border-l-4 border-l-success';
       } else {
-        icon = <XCircle className="w-3 h-3 text-risk" />;
+        icon = <AlertTriangle className="w-3 h-3 text-risk" />;
         bgClass = 'bg-risk/10 text-risk border-risk/30';
         borderStyle = 'border-l-4 border-l-risk';
       }
