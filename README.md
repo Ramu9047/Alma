@@ -1,166 +1,175 @@
-# Alma — The Academic Command Center
+# 🎓 Alma — The Academic Command Center
 
-> *"The academic ERP that actually feels like your campus."*
+<div align="center">
 
-Alma is a full-stack, role-aware academic administration platform built for higher-education institutions. It combines a warm, daylight-first UI with real JWT-based RBAC enforcement, MongoDB persistence, a predictive student risk engine, and an AI Copilot interface — all in a single coherent system.
+![Alma Banner](https://img.shields.io/badge/Alma-Academic%20Command%20Center-4F46E5?style=for-the-badge&logo=graduation-cap&logoColor=white)
+![React](https://img.shields.io/badge/React%2019-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot%203-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![MongoDB Atlas](https://img.shields.io/badge/MongoDB%20Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)
 
----
+> *"The modern academic ERP designed for real-time institutional intelligence, predictive risk monitoring, and seamless role-based access."*
 
-## What Alma Is
+[🌐 Live Web Application](https://alma.vercel.app) • [⚙️ Backend API Health](https://alma-backend-dtpq.onrender.com/api/auth/health) • [📖 Documentation](#-deployment--cloud-architecture)
 
-Alma is designed as the operational hub an HoD, faculty member, student, and parent each encounter differently — the same product, but scoped to exactly what each role is authorized to see and do.
-
-- **Admin/HoD** sees institution-wide analytics, fee recovery totals, all student risk profiles, and can approve leaves and trigger advisor alerts
-- **Staff/Faculty** see their assigned sections, at-risk students in their courses, and their own leave workflow
-- **Student** sees their own attendance, GPA, fee statement, and academic risk summary — no aggregate data visible
-- **Parent** sees their linked child's academic record and fee account only (returns 404 for unlinked accounts)
-
-This role differentiation runs through navigation, dashboard KPIs, chart data, export controls, and backend endpoint enforcement — not just label changes.
+</div>
 
 ---
 
-## Key Features
+## 📸 Interface Showcase
 
-| Feature | Details |
-|---|---|
-| **Warm Academic UI** | Fraunces serif headings, cobalt/gold accents, daylight-first palette — *Alma* identity, not a generic dark command center |
-| **Real JWT Auth** | Spring Security + HMAC-SHA256 JWTs issued by `/api/auth/login`; `JwtAuthenticationFilter` validates on every request |
-| **4-Role RBAC** | Super Admin, Admin/HoD, Staff, Student, Parent — enforced backend (`hasAnyRole`) and frontend (nav, data scoping) |
-| **MongoDB Persistence** | Active MongoRepositories across 10 collections (Students, Staff, Subjects, Fees, Timetable, Courses, Leaves, RiskScores, CopilotLogs, AuditLogs) |
-| **Predictive Risk Radar** | Rule-based predictive risk engine: dynamic dropout & fee default risk calculated on startup and schedule from live attendance, GPA, backlog, and fee arrears data |
-| **AI Copilot** | Natural language dispatcher (`/api/copilot/chat`); plain-language answer first, technical trace behind collapsible toggle; `react-markdown` rendering |
-| **Live Campus Pulse** | WebSocket (STOMP) real-time alert ticker at `/ws-pulse` broadcasting system mutations (attendance submissions, leave approvals, fee payments) to header strip |
-| **Simulated Fee Payment** | Simulated payment gateway (Demo Mode) with client-side PDF receipt generation (`jsPDF`) |
-| **Platform-aware Shortcuts** | `Ctrl+K` on Windows/Linux, `⌘K` on Mac — computed from `navigator.userAgentData?.platform` at load time |
+<div align="center">
 
----
-
-## Tech Stack
-
-### Frontend
-- **React 19** + **Vite** (port 3000)
-- **React Router v6** — client-side routing
-- **Recharts** — analytics charts
-- **react-markdown** — Copilot response rendering
-- **Lucide React** — icons
-- **jsPDF** — fee receipt & certificate PDF generation
-- **Fraunces** (Google Fonts) — serif display typeface
-- Vanilla CSS with custom design tokens
-
-### Backend
-- **Spring Boot 3** + **Spring Security 6**
-- **Spring Data MongoDB** — persistent document storage (`alma_db`)
-- **JJWT 0.11.5** — HMAC-SHA256 JWT issuance and validation
-- **Spring WebSocket (STOMP)** — live pulse event broadcasting
-- **Maven** build system
-
----
-
-## Project Structure
+### 🛡️ Predictive Risk Radar & Student Intelligence
+*Real-time AI-assisted student evaluation monitoring attendance dropout risks, fee arrears, and automated escalation.*
 
 ```
-Alma/
-├── backend/
-│   ├── src/main/java/com/college/erp/
-│   │   ├── config/            DataSeeder, WebSocketConfig
-│   │   ├── controller/        AttendanceController, AuthController, CopilotController, CourseController,
-│   │   │                      FeedbackController, FeeController, LeaveController, ParentController,
-│   │   │                      PulseController, ResultsController, RiskController, StaffController,
-│   │   │                      StudentController, SubjectController, TimetableController
-│   │   ├── model/             Attendance, AuditLog, CopilotLog, Course, Feedback, Fee, Leave, RiskScore,
-│   │   │                      Staff, Student, Subject, Timetable
-│   │   ├── repository/        10 MongoRepositories
-│   │   ├── scheduler/         RiskCalculationScheduler
-│   │   ├── security/          JwtService, JwtAuthenticationFilter, SecurityConfig
-│   │   └── service/           AuditService
-│   ├── src/main/resources/
-│   │   └── application.properties   (reads secrets from env — no hardcoded values)
-│   └── .env.example
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── copilot/       NexusOrbCopilot.jsx
-│   │   │   ├── common/        DataTable, GrowthArc, ...
-│   │   │   └── layout/        CommandRail, Layout, TopBar, CampusPulseBar
-│   │   ├── context/           AuthContext, PulseContext
-│   │   ├── pages/             AnalyticsDashboard, AttendanceModule, AuditLogView, DocumentGenerator,
-│   │   │                      FeedbackModule, FeeManagement, LeaveManagement, LiveOccupancy,
-│   │   │                      ManageCourses, ManageStaff, ManageStudents, ManageSubjects,
-│   │   │                      NotificationsCenter, ParentPortal, ResultsModule, RiskRadar, TimetableGenerator
-│   │   └── services/          api.js (REST wrapper with mock fallback guard)
-│   └── .env.example
-├── docker-compose.yml
-└── .gitignore
++---------------------------------------------------------------------------------------+
+|  ALMA COMMAND / Risk Radar                                                            |
+|  [● LIVE CAMPUS PULSE] 142 students present today (92% turnout)                       |
++---------------------------------------------------------------------------------------+
+| ROLL NUMBER | STUDENT NAME | ATTENDANCE % | OVERDUE DAYS | DROPOUT RISK | ACTION      |
+| CS2024-042  | Alex Rivera  | 88%          | 0 days       | LOW RISK     | [Dispatch]  |
+| ME2024-003  | Vikram Singh | 62% (RISK)   | 36 days      | HIGH RISK    | [Dispatch]  |
++---------------------------------------------------------------------------------------+
+```
+
+### 🔔 Custom Glassmorphic Toast & Notification System
+*Non-blocking, animated alert stack with role-aware dispatch badges, auto-dismiss timers, and zero raw browser popups.*
+
+</div>
+
+---
+
+## ✨ System Features
+
+| Module | Features & Capabilities |
+| :--- | :--- |
+| **🎓 Role-Aware Access Control (RBAC)** | Enforces 5 distinct roles (**Super Admin**, **Admin/HoD**, **Staff/Faculty**, **Student**, **Parent**). Backend Spring Security filters guard endpoints while frontend navigation dynamically renders scoped views. |
+| **⚡ Predictive Risk Radar** | Dynamic background scoring engine calculating student dropout and fee default risk (0-100 scale) based on live attendance, GPA, backlogs, and fee overdue days. |
+| **🤖 Nexus AI Copilot (`Ctrl+K`)** | Natural-language command dispatcher powered by Groq LLM integration (`/api/copilot/chat`) with markdown rendering, system action shortcuts, and execution trace logs. |
+| **🔔 Glassmorphic Alert System** | Modern non-blocking Toast Notification System with custom icons, entrance slide animations, countdown progress bars, and global native `alert()` interception. |
+| **📡 Live Campus Pulse (STOMP WebSocket)** | Real-time WebSocket broadcasting service at `/ws-pulse` streaming live campus metrics (attendance roll call, fee collections, leave decisions). |
+| **📊 Executive Institutional Analytics** | Comprehensive Recharts data visualizations showing attendance trends, pass rate metrics, fee recovery totals, and exportable executive reports. |
+| **🔑 Secure JWT Authentication** | Real HMAC-SHA256 JWT issuance via `/api/auth/login` with dynamic fallback user resolution for newly provisioned staff, student, and parent accounts. |
+| **💾 MongoDB Atlas Persistence** | Cloud document storage utilizing Spring Data MongoRepositories across 10 collections with initial seeding and live transactional updates. |
+
+---
+
+## 🏗️ Architecture & Deployment
+
+```mermaid
+flowchart TD
+    subgraph Client ["Client Layer (Vercel)"]
+        A["Vite + React 19 SPA"]
+        B["AuthContext & Toast System"]
+        C["Nexus Orb Copilot Interface"]
+    end
+
+    subgraph API ["Backend API Layer (Render Docker)"]
+        D["Spring Boot 3 Web Service"]
+        E["Spring Security + JwtAuthenticationFilter"]
+        F["RiskCalculationScheduler"]
+        G["WebSocket STOMP Broker"]
+    end
+
+    subgraph Persistence ["Database Layer (MongoDB Cloud)"]
+        H[("MongoDB Atlas M0 Cluster")]
+    end
+
+    A -->|HTTPS REST API / JSON| E
+    A <-->|WSS / STOMP WebSockets| G
+    E --> D
+    F --> D
+    D <-->|MongoRepository Driver| H
 ```
 
 ---
 
-## Setup
+## 🛠️ Technology Stack
 
-### Prerequisites
-- Node.js ≥ 18, npm ≥ 9
-- Java 17+, Maven 3.8+
-- MongoDB ≥ 6.0 running on `localhost:27017`
+### **Frontend**
+- **Framework**: React 19 SPA powered by Vite
+- **Styling**: Daylight-First Vanilla CSS with custom glassmorphism design system & Tailwind CSS utilities
+- **Icons & Visuals**: Lucide React, Fraunces Display Serif, Inter, JetBrains Mono
+- **Charts & Reports**: Recharts, jsPDF (Simulated Receipt & Certificate Engine)
+- **Deployment**: Vercel SPA (`vercel.json` rewrites)
 
-### 1. Backend
+### **Backend**
+- **Framework**: Java 17, Spring Boot 3.2, Spring Security 6
+- **Database**: Spring Data MongoDB (Cloud Cluster)
+- **Security**: JJWT (HMAC-SHA256 JWT issuance & validation), BCrypt Password Encoder
+- **Real-Time**: Spring WebSocket + SockJS + STOMP Broker
+- **Containerization**: Docker & Multi-stage Maven Builds (Render Cloud)
+
+---
+
+## 🔑 Seeded Demo Credentials
+
+| Role | Username | Password | Access Scope |
+| :--- | :--- | :--- | :--- |
+| **Super Admin** | `super_admin` | `super123` | Full System Access (Staff Management, Fees, Security Audit Logs) |
+| **Admin / HoD** | `admin_hod` | `hod123` | Institutional Analytics, Leave Approvals, Risk Radar, Course Mutations |
+| **Staff / Faculty** | `staff_001` | `staff123` | Course Attendance, At-Risk Students, Personal Leave Requests |
+| **Student** | `student_001` | `student123` | Personal Attendance (Alex Rivera `CS2024-042`), GPA, Fee Receipt |
+| **Parent** | `parent_001` | `parent123` | Linked Child Overview & Fee Statements |
+| **New Accounts** | *(Any Email/ID)* | `change123` | Dynamic role assignment with mandatory first-login password update |
+
+---
+
+## 🚀 Local Development Setup
+
+### 1. Backend Setup
 
 ```bash
 cd backend
 
-# Copy and fill in your secrets
+# Configure environment variables
 cp .env.example .env
 
-# Build
+# Compile and test
 mvn clean package -DskipTests
 
-# Run (Windows PowerShell example — set your own 32+ byte secret)
-$env:ALMA_JWT_SECRET="<your-32+-byte-secret-key>"; java -jar target/erp-backend-2.0.0-SNAPSHOT.jar
+# Start Spring Boot Server
+mvn spring-boot:run
 ```
+> *Backend starts on `http://localhost:8080`*
 
-Backend starts on **http://localhost:8080**
-
-### 2. Frontend
+### 2. Frontend Setup
 
 ```bash
 cd frontend
 
+# Install dependencies
 npm install
+
+# Start Vite Development Server
 npm run dev
 ```
-
-Frontend starts on **http://localhost:3000**
-
----
-
-## Demo Accounts
-
-Seeded in `AuthController.java` and `DataSeeder.java`:
-
-| Username | Role | Linked Record |
-|---|---|---|
-| `admin_hod` | Admin / Head of Department | Institution-wide |
-| `super_admin` | Super Administrator | Institution-wide |
-| `staff_001` | Faculty / Staff | Prof. Marcus Vance |
-| `student_001` | Student | Alex Rivera (`CS2024-042`) |
-| `student_999` | Student | Unlinked (returns 404 on `/me`) |
-| `parent_001` | Parent | Linked to Alex Rivera (`CS2024-042`) |
-| `parent_002` | Parent | Unlinked (returns 404 on `/me`) |
+> *Frontend starts on `http://localhost:3000`*
 
 ---
 
-## Security Notes
+## 🌐 Production Deployment
 
-- JWT tokens are HMAC-SHA256 signed; secret loaded from `ALMA_JWT_SECRET` env var
-- Spring Security's `JwtAuthenticationFilter` verifies tokens on every request; roles come from signed JWT claims
-- Endpoint matchers strictly enforce RBAC (`/api/leaves/**` HoD/Admin, `POST /api/feedback/*/reply` Staff/Admin, `/api/parent/me/child` Parent/Admin)
-- Data isolation: unlinked students or parents querying `/me` endpoints receive explicit HTTP 404 responses rather than silent data fallbacks
-- Tested: student JWT calling admin endpoints → **HTTP 403 Forbidden** with JSON error body
+### Frontend (Vercel)
+1. Import repository `Ramu9047/Alma` on Vercel.
+2. Set Root Directory to `frontend`.
+3. Set Environment Variable: `VITE_API_BASE_URL` = `https://alma-backend-dtpq.onrender.com`.
+
+### Backend (Render)
+1. Create a Web Service on Render from `Ramu9047/Alma`.
+2. Set Environment to **Docker** and Root Directory to `backend`.
+3. Set Environment Variables:
+   - `MONGODB_URI` = `mongodb+srv://<user>:<pass>@cluster0.xxx.mongodb.net/alma_db`
+   - `ALMA_JWT_SECRET` = `<32-character-secret>`
+   - `CORS_ALLOWED_ORIGINS` = `https://*.vercel.app,http://localhost:3000`
 
 ---
 
-## Known Limitations
+<div align="center">
 
-- **Live Occupancy Directory**: Room capacity display is a static catalog; real-time IoT sensor check-in pipeline is planned for future phases.
-- **Simulated Payment Gateway**: Fee management uses a simulated payment modal (Demo Mode) with client-side PDF receipt generation (`jsPDF`).
-- **Document Generator**: Certificate publishing renders client-side PDF templates (`jsPDF`); server-side PDF generation is scaffolded.
-- **Mac ⌘K Shortcut**: Platform detection works across operating systems; key handling is validated on Windows hardware.
+Made with ❤️ for Modern Academic Administration.
+
+</div>
