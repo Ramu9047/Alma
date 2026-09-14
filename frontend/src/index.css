@@ -4,22 +4,27 @@
 
 @layer base {
   :root {
-    /* Alma Visual Identity — Warm Academic Tone (Light-First) */
-    --bg: #FAF8F4;
+    /* Alma Visual Identity — Academic Intelligence Theme (Light Mode) */
+    --bg: #F8FAFC;
     --surface: #FFFFFF;
-    --surface-warm: #F3F1EC;
+    --surface-warm: #F1F5F9;
+    --surface-glass: rgba(255, 255, 255, 0.75);
 
-    --ink: #1B2430;
-    --ink-muted: #6B7280;
+    --ink: #0F172A;
+    --ink-muted: #64748B;
 
-    --cobalt: #2450C4;
-    --cobalt-deep: #1B3A94;
-    --gold: #D4A017;
-    --success: #2F9E63;
-    --risk: #D64545;
-    --warning: #E3A008;
+    --cobalt: #4F46E5;        /* Royal Indigo Primary */
+    --cobalt-deep: #4338CA;
+    --gold: #D97706;          /* Warm Amber */
+    --success: #10B981;       /* Emerald */
+    --risk: #EF4444;          /* Crimson Rose */
+    --warning: #F59E0B;
 
-    --border-color: rgba(36, 80, 196, 0.12);
+    --border-color: rgba(99, 102, 241, 0.14);
+    --border-hover: rgba(99, 102, 241, 0.35);
+
+    --glow-indigo: rgba(79, 70, 229, 0.15);
+    --glow-ambient: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
 
     /* Direct Theme Mapping */
     --ink-color: var(--ink);
@@ -28,29 +33,35 @@
   }
 
   html.dark {
-    /* Warm Dark Variant (Not Sci-Fi Black) */
-    --bg: #14181F;
-    --surface: #1C222C;
-    --surface-warm: #252D3A;
+    /* Rich Deep Slate-Navy Academic Theme (Dark Mode) */
+    --bg: #0B0F17;
+    --surface: #131B2A;
+    --surface-warm: #1C273C;
+    --surface-glass: rgba(19, 27, 42, 0.75);
 
-    --ink: #F3F4F6;
-    --ink-muted: #9CA3AF;
+    --ink: #F8FAFC;
+    --ink-muted: #94A3B8;
 
-    --cobalt: #3B82F6;
-    --cobalt-deep: #2563EB;
+    --cobalt: #6366F1;
+    --cobalt-deep: #4F46E5;
     --gold: #F59E0B;
     --success: #34D399;
-    --risk: #EF4444;
-    --warning: #F59E0B;
+    --risk: #F87171;
+    --warning: #FBBF24;
 
-    --border-color: rgba(255, 255, 255, 0.1);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(99, 102, 241, 0.4);
+
+    --glow-indigo: rgba(99, 102, 241, 0.25);
+    --glow-ambient: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
   }
 
   body {
     background-color: var(--bg);
     color: var(--ink);
     font-family: 'Inter', sans-serif;
-    transition: background-color 200ms ease, color 200ms ease;
+    transition: background-color 250ms ease, color 250ms ease;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, .font-serif-header {
@@ -58,35 +69,44 @@
   }
 }
 
-/* Alma Card & Panel Styling */
+/* ── Glassmorphism & Card System ────────────────────────────── */
 .command-card, .alma-card {
-  background-color: var(--surface);
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  box-shadow: 0 4px 20px -2px rgba(27, 36, 48, 0.05);
-  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.dark .command-card, html.dark .alma-card {
+  box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
 .command-card:hover, .alma-card:hover {
-  border-color: rgba(36, 80, 196, 0.25);
-  box-shadow: 0 8px 24px -4px rgba(27, 36, 48, 0.09);
+  border-color: var(--border-hover);
+  box-shadow: 0 16px 40px -12px var(--glow-indigo), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
 }
 
-/* Alma Rail Sidebar Styling */
+/* Glass Command Rail Sidebar */
 .glass-rail, .alma-rail {
-  background-color: var(--surface);
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-right: 1px solid var(--border-color);
-  box-shadow: 2px 0 12px 0 rgba(27, 36, 48, 0.03);
+  box-shadow: 4px 0 24px 0 rgba(15, 23, 42, 0.04);
 }
 
-/* Table Styling */
+/* ── Table Styling ─────────────────────────────────────────── */
 .command-table-row {
-  transition: background-color 120ms ease, border-left-color 120ms ease;
+  transition: all 150ms ease;
   border-left: 3px solid transparent;
 }
 
 .command-table-row:nth-child(even) {
-  background-color: rgba(27, 36, 48, 0.015);
+  background-color: rgba(99, 102, 241, 0.015);
 }
 
 html.dark .command-table-row:nth-child(even) {
@@ -96,52 +116,73 @@ html.dark .command-table-row:nth-child(even) {
 .command-table-row:hover {
   background-color: var(--surface-warm);
   border-left-color: var(--cobalt);
+  transform: scale(1.002);
 }
 
 /* Ghost Action Buttons */
 .ghost-action-btn {
   color: var(--ink-muted);
   background: transparent;
-  border-radius: 8px;
-  padding: 6px;
-  transition: color 150ms ease, background-color 150ms ease;
+  border-radius: 10px;
+  padding: 6px 10px;
+  transition: all 180ms ease;
 }
 
 .ghost-action-btn:hover {
   color: var(--cobalt);
-  background-color: rgba(36, 80, 196, 0.08);
+  background-color: rgba(99, 102, 241, 0.1);
 }
 
 .ghost-action-btn.danger:hover {
   color: var(--risk);
-  background-color: rgba(214, 69, 69, 0.1);
+  background-color: rgba(239, 68, 68, 0.12);
 }
 
 /* Primary Button Styling */
 .btn-cobalt {
-  background-color: var(--cobalt);
+  background: linear-gradient(135deg, var(--cobalt) 0%, var(--cobalt-deep) 100%);
   color: #FFFFFF;
-  font-weight: 500;
-  border-radius: 10px;
-  transition: background-color 150ms ease, box-shadow 150ms ease;
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.3);
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-cobalt:hover {
-  background-color: var(--cobalt-deep);
-  box-shadow: 0 4px 14px 0 rgba(36, 80, 196, 0.25);
+  box-shadow: 0 6px 20px 0 rgba(79, 70, 229, 0.45);
+  transform: translateY(-1px);
 }
 
 .btn-gold {
-  background-color: var(--gold);
+  background: linear-gradient(135deg, var(--gold) 0%, #B45309 100%);
   color: #FFFFFF;
   font-weight: 600;
-  border-radius: 10px;
-  transition: background-color 150ms ease, box-shadow 150ms ease;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px 0 rgba(217, 119, 6, 0.3);
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-gold:hover {
-  background-color: #B88A12;
-  box-shadow: 0 4px 14px 0 rgba(212, 160, 23, 0.3);
+  box-shadow: 0 6px 20px 0 rgba(217, 119, 6, 0.45);
+  transform: translateY(-1px);
+}
+
+/* Glowing Accent Border */
+.glow-card-indigo {
+  position: relative;
+}
+.glow-card-indigo::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 21px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), transparent 60%, rgba(139, 92, 246, 0.3));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 /* Custom Scrollbar */
@@ -150,17 +191,17 @@ html.dark .command-table-row:nth-child(even) {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(107, 114, 128, 0.25);
-  border-radius: 3px;
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--ink-muted);
+  background: var(--cobalt);
 }
 
-/* Ticker Animation */
+/* Campus Pulse Ticker Animation */
 @keyframes scrollTicker {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -169,7 +210,7 @@ html.dark .command-table-row:nth-child(even) {
 .animate-pulse-scroll {
   display: flex;
   width: max-content;
-  animation: scrollTicker 32s linear infinite;
+  animation: scrollTicker 30s linear infinite;
 }
 
 .animate-pulse-scroll:hover {

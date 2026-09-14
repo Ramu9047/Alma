@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '../components/common/DataTable';
 import { apiService } from '../services/api';
-import { UserPlus, WifiOff, X } from 'lucide-react';
+import { UserPlus, WifiOff, X, Lock } from 'lucide-react';
+import { useAuth, ROLES } from '../context/AuthContext';
 
 export default function ManageStaff() {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === ROLES.SUPER_ADMIN;
+
   const [staffList, setStaffList] = useState([]);
   const [isOffline, setIsOffline] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -91,6 +95,20 @@ export default function ManageStaff() {
       }
     }
   ];
+
+  if (!isSuperAdmin) {
+    return (
+      <div className="command-card p-8 text-center space-y-4 max-w-lg mx-auto my-12 border border-risk/30 bg-risk/5 rounded-3xl">
+        <div className="w-12 h-12 rounded-2xl bg-risk/10 text-risk flex items-center justify-center mx-auto">
+          <Lock className="w-6 h-6" />
+        </div>
+        <h2 className="font-serif text-xl font-bold text-ink">Access Restricted — Super Admin Authorization Required</h2>
+        <p className="text-xs text-ink-muted font-sans leading-relaxed">
+          Faculty & Staff Registry management is strictly restricted to **Super Admin** credentials.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -11,9 +11,11 @@ import StatusPill from '../components/common/StatusPill';
 export default function FeeManagement() {
   const { pushPulseAlert } = usePulse();
   const { user } = useAuth();
-  const role = user?.role;
+  const isSuperAdmin = (role === ROLES.SUPER_ADMIN);
+  const isStudentOrParent = (role === ROLES.STUDENT || role === ROLES.PARENT);
+  const isDenied = !isSuperAdmin && !isStudentOrParent;
 
-  const isRestricted = (role === ROLES.STUDENT || role === ROLES.PARENT);
+  const isRestricted = isStudentOrParent;
   const [feesList, setFeesList] = useState([]);
   const [isOffline, setIsOffline] = useState(false);
 
@@ -22,6 +24,7 @@ export default function FeeManagement() {
   const [processing, setProcessing] = useState(false);
 
   const loadFees = async () => {
+    if (isDenied) return;
     const res = await apiService.getFees();
     const list = res.data || mockFees;
     setFeesList(isRestricted ? list.filter(f => f.studentId === 'CS2024-042') : list);
@@ -91,12 +94,21 @@ export default function FeeManagement() {
         return (
           <div className="flex items-center gap-2">
             {paid < total && (
-              <button
-                onClick={() => handleOpenPayGateway(r)}
-                className="px-3 py-1 rounded-xl btn-cobalt text-xs font-mono flex items-center gap-1 font-semibold"
-              >
-                <CreditCard className="w-3.5 h-3.5" /> Pay Online
-              </button>
+              isRestricted ? (
+                <button
+                  onClick={() => handleOpenPayGateway(r)}
+                  className="px-3 py-1 rounded-xl btn-cobalt text-xs font-mono flex items-center gap-1 font-semibold shadow-sm"
+                >
+                  <CreditCard className="w-3.5 h-3.5" /> Pay Online
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleOpenPayGateway(r)}
+                  className="px-3 py-1 rounded-xl btn-cobalt text-xs font-mono flex items-center gap-1 font-semibold shadow-sm"
+                >
+                  <DollarSign className="w-3.5 h-3.5" /> Record Payment
+                </button>
+              )
             )}
             {paid > 0 && (
               <button
@@ -111,6 +123,21 @@ export default function FeeManagement() {
       }
     }
   ];
+
+  if (isDenied) {
+    return (
+      <div className="command-card p-8 text-center space-y-4 max-w-lg mx-auto my-12 border border-risk/30 bg-risk/5 rounded-3xl">
+        <div className="w-12 h-12 rounded-2xl bg-risk/10 text-risk flex items-center justify-center mx-auto">
+          <Lock className="w-6 h-6" />
+        </div>
+        <h2 className="font-serif text-xl font-bold text-ink">Access Restricted — Super Admin Authorization Required</h2>
+        <p className="text-xs text-ink-muted font-sans leading-relaxed">
+          Institutional Fee & Finance collection ledgers are strictly restricted to **Super Admin** or personal student/parent statements.
+          Departmental Admin/HoD accounts are not authorized to view or manage global financial records.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -159,9 +186,13 @@ export default function FeeManagement() {
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-cobalt" />
-                <h3 className="font-serif font-bold text-ink text-lg">Simulated Payment (Demo Mode)</h3>
+                <h3 className="font-serif font-bold text-ink text-lg">
+                  {isRestricted ? 'Simulated Payment (Demo Mode)' : 'Record Fee Collection'}
+                </h3>
               </div>
-              <span className="text-[10px] font-mono bg-cobalt/10 text-cobalt px-2 py-0.5 rounded-full font-semibold">DEMO MODE</span>
+              <span className="text-[10px] font-mono bg-cobalt/10 text-cobalt px-2 py-0.5 rounded-full font-semibold">
+                {isRestricted ? 'ONLINE GATEWAY' : 'ADMIN LEDGER ENTRY'}
+              </span>
             </div>
 
             <div className="space-y-3 font-mono text-xs">
@@ -186,7 +217,7 @@ export default function FeeManagement() {
 
               <div className="p-3 bg-surface-warm rounded-xl border border-border text-[11px] text-ink-muted flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-success" />
-                <span>Simulated Encrypted Gateway Checkout (Demo Mode)</span>
+                <span>{isRestricted ? 'Simulated Encrypted Gateway Checkout (Demo Mode)' : 'Recorded by Admin to Student MongoDB Fee Ledger'}</span>
               </div>
             </div>
 
@@ -202,7 +233,7 @@ export default function FeeManagement() {
                 disabled={processing}
                 className="px-5 py-2 rounded-xl btn-cobalt font-semibold text-xs flex items-center gap-2"
               >
-                {processing ? 'Processing Payment...' : `Pay ₹${payAmount} Now`}
+                {processing ? 'Processing...' : isRestricted ? `Pay ₹${payAmount} Now` : `Record ₹${payAmount} Collection`}
               </button>
             </div>
           </div>

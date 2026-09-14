@@ -11,6 +11,7 @@ export default {
         bg: 'var(--bg)',
         surface: 'var(--surface)',
         'surface-warm': 'var(--surface-warm)',
+        'surface-glass': 'var(--surface-glass)',
         ink: 'var(--ink)',
         'ink-muted': 'var(--ink-muted)',
         cobalt: 'var(--cobalt)',
@@ -35,13 +36,18 @@ export default {
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       borderRadius: {
-        'card': '16px',
+        'card': '20px',
+        'xl': '14px',
+        '2xl': '20px',
+        '3xl': '28px',
       },
       boxShadow: {
-        'warm-sm': '0 2px 8px 0 rgba(27, 36, 48, 0.04)',
-        'warm-md': '0 4px 20px -2px rgba(27, 36, 48, 0.07)',
-        'warm-lg': '0 12px 32px -4px rgba(27, 36, 48, 0.10)',
-        'cobalt-glow': '0 4px 14px 0 rgba(36, 80, 196, 0.25)',
+        'warm-sm': '0 2px 8px 0 rgba(15, 23, 42, 0.04)',
+        'warm-md': '0 6px 20px -2px rgba(15, 23, 42, 0.06)',
+        'warm-lg': '0 16px 36px -4px rgba(15, 23, 42, 0.10)',
+        'glass': '0 8px 32px 0 rgba(15, 23, 42, 0.08)',
+        'cobalt-glow': '0 6px 20px 0 rgba(99, 102, 241, 0.35)',
+        'gold-glow': '0 6px 20px 0 rgba(245, 158, 11, 0.35)',
       },
       keyframes: {
         ticker: {
@@ -49,18 +55,18 @@ export default {
           '100%': { transform: 'translateX(-100%)' },
         },
         staggerFade: {
-          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        drawArc: {
-          '0%': { strokeDashoffset: '100' },
-          '100%': { strokeDashoffset: '0' },
+        pulseGlow: {
+          '0%, 100%': { opacity: '0.4' },
+          '50%': { opacity: '0.9' },
         }
       },
       animation: {
         'pulse-ticker': 'ticker 30s linear infinite',
-        'stagger-fade': 'staggerFade 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'draw-arc': 'drawArc 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'stagger-fade': 'staggerFade 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
       }
     },
   },

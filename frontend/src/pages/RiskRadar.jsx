@@ -51,8 +51,8 @@ export default function RiskRadar() {
   };
 
   const columns = [
-    { header: 'Roll Number', accessor: 'rollNumber', render: (r) => <span className="font-mono text-cobalt font-semibold">{r.rollNumber}</span> },
-    { header: 'Student Name', accessor: 'name', render: (r) => <span className="font-medium text-ink">{r.name}</span> },
+    { header: 'Roll Number', accessor: 'rollNumber', render: (r) => <span className="font-mono text-cobalt font-bold">{r.rollNumber}</span> },
+    { header: 'Student Name', accessor: 'name', render: (r) => <span className="font-semibold text-ink whitespace-nowrap">{r.name}</span> },
     {
       header: 'Attendance %',
       accessor: 'attendance',
@@ -77,7 +77,7 @@ export default function RiskRadar() {
     {
       header: 'Recommended Action',
       accessor: 'recommendedAction',
-      render: (r) => <span className="text-xs text-ink-muted italic">{r.recommendedAction}</span>
+      render: (r) => <span className="text-xs text-ink-muted italic font-sans whitespace-nowrap">{r.recommendedAction}</span>
     },
     ...(!isRestricted ? [{
       header: 'Action',
@@ -85,7 +85,7 @@ export default function RiskRadar() {
       render: (r) => (
         <button
           onClick={() => handleDispatchAlert(r)}
-          className="px-3 py-1 rounded-xl btn-cobalt text-xs font-mono font-semibold flex items-center gap-1"
+          className="px-3.5 py-1.5 rounded-xl btn-cobalt text-xs font-mono font-semibold flex items-center gap-1.5 shadow-sm whitespace-nowrap"
         >
           <Bell className="w-3.5 h-3.5" /> Dispatch Alert
         </button>
@@ -96,66 +96,71 @@ export default function RiskRadar() {
   return (
     <div className="space-y-6">
       {isOffline && (
-        <div className="p-3 bg-warning/10 border border-warning/30 text-warning text-xs font-mono rounded-xl flex items-center justify-between">
+        <div className="p-3.5 bg-warning/10 border border-warning/30 text-warning text-xs font-mono rounded-2xl flex items-center justify-between">
           <div className="flex items-center gap-2">
             <WifiOff className="w-4 h-4" />
             <span>Backend offline — displaying cached demo risk score dataset</span>
           </div>
-          <span className="px-2 py-0.5 bg-warning/20 rounded text-[10px] font-bold">DEMO MODE</span>
+          <span className="px-2.5 py-0.5 bg-warning/20 rounded-full text-[10px] font-bold">DEMO MODE</span>
         </div>
       )}
 
-      {/* Top Banner Overview with GrowthArc inside header away from KPI card grid per Item 13 */}
-      <div className="command-card p-6 bg-gradient-to-r from-surface via-surface-warm to-surface border border-border space-y-3">
-        <div className="flex items-center gap-2 text-warning">
-          <ShieldAlert className="w-5 h-5" />
-          <span className="font-mono text-xs uppercase tracking-wider font-semibold">PREDICTIVE INTELLIGENCE & RISK RADAR</span>
+      {/* Top Banner Overview */}
+      <div className="command-card glow-card-indigo p-6 space-y-3 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-warning">
+              <ShieldAlert className="w-5 h-5" />
+              <span className="font-mono text-xs uppercase tracking-wider font-bold">PREDICTIVE INTELLIGENCE & RISK RADAR</span>
+            </div>
+            <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink">
+              {isRestricted ? 'My Academic Risk Summary' : 'Student Retention & Fee Default Analytics'}
+            </h2>
+            <p className="text-xs text-ink-muted font-mono max-w-2xl">
+              {isRestricted
+                ? 'Showing your personal academic standing — institution-wide risk data is restricted to Admin/HoD.'
+                : 'Nightly rule-based composite scoring engine (Attendance + Results + Fee Ledgers + Leave Frequency)'}
+            </p>
+          </div>
+          
+          <div className="hidden lg:block w-44 h-16 flex-shrink-0">
+            <GrowthArc mode="banner" variant="cobalt" />
+          </div>
         </div>
-        <h2 className="font-serif text-2xl font-bold text-ink">
-          {isRestricted ? 'My Academic Risk Summary' : 'Student Retention & Fee Default Analytics'}
-        </h2>
-        <p className="text-xs text-ink-muted font-mono">
-          {isRestricted
-            ? 'Showing your personal academic standing — institution-wide risk data is restricted to Admin/HoD.'
-            : 'Nightly rule-based composite scoring engine (Attendance + Results + Fee Ledgers + Leave Frequency)'}
-        </p>
-
-        {/* GrowthArc header placement */}
-        <GrowthArc mode="divider" variant="cobalt" />
       </div>
 
       {/* High-Level Risk Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="command-card p-5 flex items-center justify-between">
+        <div className="command-card p-5 flex items-center justify-between hover:border-risk/40 transition-all">
           <div>
-            <span className="text-[10px] font-mono text-ink-muted uppercase tracking-wider">CRITICAL AT-RISK STUDENTS</span>
-            <h3 className="text-2xl font-serif font-bold text-risk mt-1">{riskData.filter(r => r.dropoutRiskScore > 70).length} Students</h3>
+            <span className="text-[10px] font-mono text-ink-muted uppercase font-bold tracking-wider">CRITICAL AT-RISK STUDENTS</span>
+            <h3 className="text-3xl font-serif font-bold text-risk mt-1">{riskData.filter(r => r.dropoutRiskScore > 70).length} Students</h3>
             <span className="text-[10px] font-mono text-risk font-semibold">Score &gt; 70 / 100</span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-risk/10 border border-risk/30 flex items-center justify-center text-risk">
-            <AlertTriangle className="w-5 h-5" />
+          <div className="w-12 h-12 rounded-2xl bg-risk/10 border border-risk/30 flex items-center justify-center text-risk shadow-sm">
+            <AlertTriangle className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="command-card p-5 flex items-center justify-between">
+        <div className="command-card p-5 flex items-center justify-between hover:border-warning/40 transition-all">
           <div>
-            <span className="text-[10px] font-mono text-ink-muted uppercase tracking-wider">MEDIUM RISK STUDENTS</span>
-            <h3 className="text-2xl font-serif font-bold text-warning mt-1">{riskData.filter(r => r.dropoutRiskScore >= 50 && r.dropoutRiskScore <= 70).length} Students</h3>
+            <span className="text-[10px] font-mono text-ink-muted uppercase font-bold tracking-wider">MEDIUM RISK STUDENTS</span>
+            <h3 className="text-3xl font-serif font-bold text-warning mt-1">{riskData.filter(r => r.dropoutRiskScore >= 50 && r.dropoutRiskScore <= 70).length} Students</h3>
             <span className="text-[10px] font-mono text-warning font-semibold">Score 50-70 / 100</span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-warning/10 border border-warning/30 flex items-center justify-center text-warning">
-            <ShieldAlert className="w-5 h-5" />
+          <div className="w-12 h-12 rounded-2xl bg-warning/10 border border-warning/30 flex items-center justify-center text-warning shadow-sm">
+            <ShieldAlert className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="command-card p-5 flex items-center justify-between">
+        <div className="command-card p-5 flex items-center justify-between hover:border-success/40 transition-all">
           <div>
-            <span className="text-[10px] font-mono text-ink-muted uppercase tracking-wider">CLEAR / LOW RISK</span>
-            <h3 className="text-2xl font-serif font-bold text-success mt-1">Good Standing</h3>
+            <span className="text-[10px] font-mono text-ink-muted uppercase font-bold tracking-wider">CLEAR / LOW RISK</span>
+            <h3 className="text-3xl font-serif font-bold text-success mt-1">Good Standing</h3>
             <span className="text-[10px] font-mono text-success font-semibold">Att &gt; 75%, Dues Paid</span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-success/10 border border-success/30 flex items-center justify-center text-success">
-            <UserCheck className="w-5 h-5" />
+          <div className="w-12 h-12 rounded-2xl bg-success/10 border border-success/30 flex items-center justify-center text-success shadow-sm">
+            <UserCheck className="w-6 h-6" />
           </div>
         </div>
       </div>

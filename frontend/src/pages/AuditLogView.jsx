@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import DataTable from '../components/common/DataTable';
 import StatusPill from '../components/common/StatusPill';
 import { apiService, mockAuditLogs } from '../services/api';
-import { WifiOff, Filter } from 'lucide-react';
+import { useAuth, ROLES } from '../context/AuthContext';
+import { WifiOff, Filter, Lock } from 'lucide-react';
 
 export default function AuditLogView() {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === ROLES.SUPER_ADMIN;
+
   const [logs, setLogs] = useState([]);
   const [isOffline, setIsOffline] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -14,6 +18,7 @@ export default function AuditLogView() {
   const [actorFilter, setActorFilter] = useState('');
 
   const loadAuditLogs = async () => {
+    if (!isSuperAdmin) return;
     setLoading(true);
     const res = await apiService.getAuditLogs();
     setLogs(res.data || mockAuditLogs);
@@ -44,6 +49,21 @@ export default function AuditLogView() {
     { header: 'Collection', render: (r) => <span className="font-mono text-ink font-semibold">{r.collectionName || r.collection || '—'}</span> },
     { header: 'Record ID', render: (r) => <span className="font-mono text-xs text-ink-muted">{r.recordId || '—'}</span> }
   ];
+
+  if (!isSuperAdmin) {
+    return (
+      <div className="command-card p-8 text-center space-y-4 max-w-lg mx-auto my-12 border border-risk/30 bg-risk/5 rounded-3xl">
+        <div className="w-12 h-12 rounded-2xl bg-risk/10 text-risk flex items-center justify-center mx-auto">
+          <Lock className="w-6 h-6" />
+        </div>
+        <h2 className="font-serif text-xl font-bold text-ink">Access Restricted — Super Admin Authorization Required</h2>
+        <p className="text-xs text-ink-muted font-sans leading-relaxed">
+          System and security transaction audit logs are restricted exclusively to **Super Admin** accounts.
+          Departmental Admin/HoD accounts are not authorized to inspect system-wide security audit trails.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

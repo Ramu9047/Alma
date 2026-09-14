@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, Download, PieChart as PieIcon, Lock, WifiOff } from 'lucide-react';
+import { TrendingUp, Download, PieChart as PieIcon, Lock, WifiOff, Activity, Sparkles } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from 'recharts';
 import GrowthArc from '../components/common/GrowthArc';
 import { useAuth, ROLES } from '../context/AuthContext';
@@ -45,69 +45,81 @@ export default function AnalyticsDashboard() {
   ];
 
   const gradeDist = [
-    { name: 'Distinction (>85%)',    value: 45, color: '#2F9E63' },
-    { name: 'First Class (70-85%)',  value: 38, color: '#2450C4' },
-    { name: 'Second Class (50-70%)', value: 12, color: '#D4A017' },
-    { name: 'Needs Support (<50%)',  value: 5,  color: '#D64545' },
+    { name: 'Distinction (>85%)',    value: 45, color: '#10B981' },
+    { name: 'First Class (70-85%)',  value: 38, color: '#4F46E5' },
+    { name: 'Second Class (50-70%)', value: 12, color: '#F59E0B' },
+    { name: 'Needs Support (<50%)',  value: 5,  color: '#EF4444' },
   ];
 
   const TOOLTIP_STYLE = {
-    backgroundColor: '#FFFFFF',
-    borderColor: 'rgba(36,80,196,0.15)',
-    borderRadius: '12px',
+    backgroundColor: 'var(--surface)',
+    borderColor: 'var(--border-color)',
+    borderRadius: '14px',
     fontSize: '12px',
-    color: '#1B2430'
+    color: 'var(--ink)',
+    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+    padding: '10px 14px'
   };
 
   return (
     <div className="space-y-6">
       {isOffline && (
-        <div className="p-3 bg-warning/10 border border-warning/30 text-warning text-xs font-mono rounded-xl flex items-center justify-between">
+        <div className="p-3.5 bg-warning/10 border border-warning/30 text-warning text-xs font-mono rounded-2xl flex items-center justify-between">
           <div className="flex items-center gap-2">
             <WifiOff className="w-4 h-4" />
             <span>Backend offline — displaying cached demo analytics dataset</span>
           </div>
-          <span className="px-2 py-0.5 bg-warning/20 rounded text-[10px] font-bold">DEMO MODE</span>
+          <span className="px-2.5 py-0.5 bg-warning/20 rounded-full text-[10px] font-bold">DEMO MODE</span>
         </div>
       )}
 
-      {/* Top Banner Header with GrowthArc moved away from KPI grid per Item 13 */}
-      <div className="command-card p-5 space-y-3">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 className="font-serif text-xl font-bold text-ink">
+      {/* Top Banner Header */}
+      <div className="command-card glow-card-indigo p-6 space-y-3 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-cobalt">
+              <Activity className="w-4 h-4" />
+              <span className="font-mono text-xs font-bold uppercase tracking-wider">EXECUTIVE INTELLIGENCE</span>
+            </div>
+            <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink">
               {isRestricted ? 'My Academic Progress Analytics' : 'Institutional Analytics Dashboard'}
             </h2>
-            <p className="text-xs text-ink-muted">
+            <p className="text-xs text-ink-muted font-sans">
               {isRestricted ? `Viewing personal standing for ${user?.name}` : 'Executive academic metrics & data intelligence engine — all departments'}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-3">
             {!isRestricted ? (
-              <>
-                <button onClick={() => alert('Exporting PDF...')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-warm border border-border text-ink text-xs font-mono hover:text-cobalt transition-all font-semibold">
-                  <Download className="w-3.5 h-3.5" /> Export PDF
-                </button>
-              </>
+              <button
+                onClick={() => alert('Exporting PDF report...')}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-warm border border-border text-ink text-xs font-mono hover:text-cobalt hover:border-cobalt/40 transition-all font-semibold shadow-sm"
+              >
+                <Download className="w-4 h-4" /> Export PDF Report
+              </button>
             ) : (
               <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-warm border border-border text-ink-muted text-xs font-mono">
-                <Lock className="w-3 h-3" /> Scoped Student View
+                <Lock className="w-3.5 h-3.5" /> Scoped Student View
               </span>
             )}
+            
+            <div className="hidden lg:block w-36 h-14 flex-shrink-0">
+              <GrowthArc mode="banner" variant="cobalt" />
+            </div>
           </div>
         </div>
-
-        {/* GrowthArc header placement */}
-        <GrowthArc mode="divider" variant="cobalt" />
       </div>
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {kpis.map((kpi, i) => (
-          <div key={i} className="command-card p-5">
-            <span className="text-[10px] font-mono text-ink-muted uppercase font-semibold">{kpi.label}</span>
-            <h3 className={`text-2xl font-serif font-bold mt-1 ${kpi.valueColor}`}>{kpi.value}</h3>
-            <span className={`text-[10px] font-mono font-semibold ${kpi.deltaColor}`}>{kpi.delta}</span>
+          <div key={i} className="command-card p-5 space-y-2 hover:border-cobalt/40 transition-all">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-ink-muted uppercase font-bold tracking-wider">{kpi.label}</span>
+              <Sparkles className="w-3.5 h-3.5 text-cobalt/40" />
+            </div>
+            <h3 className={`text-3xl font-serif font-bold ${kpi.valueColor}`}>{kpi.value}</h3>
+            <span className={`text-[11px] font-mono font-semibold block ${kpi.deltaColor}`}>{kpi.delta}</span>
           </div>
         ))}
       </div>
@@ -115,8 +127,8 @@ export default function AnalyticsDashboard() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="command-card p-6 space-y-4">
-          <h3 className="font-serif text-base font-bold text-ink flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-cobalt" />
+          <h3 className="font-serif text-lg font-bold text-ink flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-cobalt" />
             <span>Weekly Attendance Trend</span>
           </h3>
           <div className="h-64">
@@ -124,28 +136,28 @@ export default function AnalyticsDashboard() {
               <AreaChart data={attendanceTrend}>
                 <defs>
                   <linearGradient id="colorAtt" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#2450C4" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#2450C4" stopOpacity={0} />
+                    <stop offset="5%"  stopColor="#4F46E5" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#4F46E5" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="week" stroke="#6B7280" fontSize={10} />
-                <YAxis stroke="#6B7280" fontSize={10} domain={[60, 100]} />
+                <XAxis dataKey="week" stroke="var(--ink-muted)" fontSize={11} />
+                <YAxis stroke="var(--ink-muted)" fontSize={11} domain={[60, 100]} />
                 <Tooltip contentStyle={TOOLTIP_STYLE} />
-                <Area type="monotone" dataKey="attendance" stroke="#2450C4" strokeWidth={2.5} fillOpacity={1} fill="url(#colorAtt)" />
+                <Area type="monotone" dataKey="attendance" stroke="#4F46E5" strokeWidth={3} fillOpacity={1} fill="url(#colorAtt)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         <div className="command-card p-6 space-y-4">
-          <h3 className="font-serif text-base font-bold text-ink flex items-center gap-2">
-            <PieIcon className="w-4 h-4 text-gold" />
+          <h3 className="font-serif text-lg font-bold text-ink flex items-center gap-2">
+            <PieIcon className="w-5 h-5 text-gold" />
             <span>Grade Distribution</span>
           </h3>
           <div className="h-64 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={gradeDist} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={85} label>
+                <Pie data={gradeDist} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={85} innerRadius={45} paddingAngle={4} label>
                   {gradeDist.map((entry, i) => (
                     <Cell key={`cell-${i}`} fill={entry.color} />
                   ))}

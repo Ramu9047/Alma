@@ -103,8 +103,10 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ── Mock login fallback (no backend) ─────────────────────────────
+  // ── Mock login fallback (supports preset & newly created users) ────
   const _mockLogin = (username, password) => {
+    const u = username.toLowerCase().trim();
+
     const mockCredentials = {
       'admin_hod':   { role: ROLES.HOD_ADMIN,   name: 'Dr. Sarah Jenkins',             pass: 'hod123'     },
       'super_admin': { role: ROLES.SUPER_ADMIN,  name: 'System Administrator',          pass: 'super123'   },
@@ -112,17 +114,33 @@ export function AuthProvider({ children }) {
       'student_001': { role: ROLES.STUDENT,      name: 'Alex Rivera (CS2024-042)',      pass: 'student123' },
       'parent_001':  { role: ROLES.PARENT,       name: 'Elena Rivera (Parent of Alex)', pass: 'parent123'  },
     };
-    const record = mockCredentials[username];
+
+    let record = mockCredentials[u];
+
+    // Dynamic resolution for newly added students, staff, or parents
+    if (!record) {
+      if (password === 'change123' || password === 'student123' || password === 'staff123' || password === 'parent123' || password === u) {
+        if (u.startsWith('emp') || u.startsWith('stf') || u.includes('prof') || u.includes('dr')) {
+          record = { role: ROLES.STAFF, name: `Faculty Member (${username})`, pass: password };
+        } else if (u.startsWith('parent') || u.includes('parent')) {
+          record = { role: ROLES.PARENT, name: `Parent Account (${username})`, pass: password };
+        } else {
+          record = { role: ROLES.STUDENT, name: `Student (${username})`, pass: password };
+        }
+      }
+    }
+
     if (!record || record.pass !== password) {
       setLoginAttempts(prev => prev + 1);
       throw new Error('Invalid username or password.');
     }
+
     const mockToken = `mock_jwt_${Date.now()}`;
     const newUser = {
       id: `usr_${Date.now()}`,
       username,
       name: record.name,
-      email: `${username}@alma.edu`,
+      email: username.includes('@') ? username : `${username}@alma.edu`,
       role: record.role,
       department: 'Computer Science & Engineering',
       isFirstLogin: password === 'change123',

@@ -88,12 +88,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/feedback/*/reply").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF")
                 .requestMatchers("/api/feedback/**").authenticated()
 
-                // Copilot action execution — admin only
+                // Copilot action execution — admin only; general copilot chat open to all authenticated users
                 .requestMatchers("/api/copilot/execute-action").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD")
-                .requestMatchers("/api/copilot/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF")
+                .requestMatchers("/api/copilot/**").authenticated()
 
-                // Admin-level data management
-                .requestMatchers("/api/admin/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD")
+                // Admin-level data management & Security Audit Logs — Super Admin only
+                .requestMatchers("/api/admin/**", "/api/audit-log/**", "/api/staff/manage/**").hasRole("SUPER_ADMIN")
 
                 // Staff/faculty resources
                 .requestMatchers("/api/staff/**").hasAnyRole("SUPER_ADMIN", "ADMIN_HOD", "STAFF")
